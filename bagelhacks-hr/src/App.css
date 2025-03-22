@@ -1,5 +1,6 @@
 :root {
-    --accent-color: blue;
+    --accent-background: blue;
+    --accent-foreground: white;
 }
 
 header {
@@ -10,5 +11,8 @@ header {
 }
 
 .accented {
-    background-color: var(--accent-color);
+    background-color: var(--accent-background);
+    color: var(--accent-foreground);
+    padding: 0.5rem;
+    border-radius: 0.5rem;
 }
