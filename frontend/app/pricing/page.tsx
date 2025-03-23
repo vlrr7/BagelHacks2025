@@ -331,6 +331,7 @@ export default function PricingPage() {
                 initial="hidden"
                 animate="visible"
               >
+                <div></div>
                 <motion.div variants={fadeIn}>
                   <Card className="h-full flex flex-col">
                     <CardHeader>
@@ -384,6 +385,7 @@ export default function PricingPage() {
                       </Button>
                     </CardFooter>
                   </Card>
+                  <div></div>
                 </motion.div>
               </motion.div>
             </TabsContent>
