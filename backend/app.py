@@ -1,3 +1,4 @@
+from database import init_db
 import os
 from flask import Flask, request, jsonify
 from flask_cors import CORS
@@ -5,7 +6,8 @@ from dotenv import load_dotenv
 import bcrypt
 from werkzeug.utils import secure_filename
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
-
+from database import extract_user_cvs
+from cohere import rerank_cohere
 
 # Load environment variables if you want to use them (e.g., SECRET_KEY)
 load_dotenv()
@@ -14,7 +16,6 @@ app = Flask(__name__)
 app.config["MONGODB_URI"] = os.getenv("MONGODB_URI", "fallback-secret-key")
 
 # Import the `db` object from database.py
-from database import init_db
 db = None
 with app.app_context():
     db = init_db()
@@ -25,13 +26,17 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 
 # User model
+
+
 class User(UserMixin):
     def __init__(self, user_data):
         self.id = user_data['email']
         self.email = user_data['email']
         self.password = user_data['password']
-        
+
 # User loader callback
+
+
 @login_manager.user_loader
 def load_user(user_id):
     user_data = db.users.find_one({"email": user_id})
@@ -39,12 +44,15 @@ def load_user(user_id):
         return User(user_data)
     return None
 
+
 # Allow CORS requests (from your frontend on port 3000, for instance)
 CORS(app, resources={r"/*": {"origins": "*"}})
 
 ############################################
 #              TEST ROUTE
 ############################################
+
+
 @app.route("/", methods=["GET"])
 def home():
     return jsonify({"message": "Backend is running!"})
@@ -52,6 +60,8 @@ def home():
 ############################################
 #              AUTH ROUTES
 ############################################
+
+
 @app.route("/register", methods=["POST"])
 def register():
     """
@@ -84,6 +94,7 @@ def register():
 
     return jsonify({"message": "Registration successful"}), 201
 
+
 @app.route("/login", methods=["POST"])
 def login():
     """
@@ -106,7 +117,7 @@ def login():
 
     # Check the hashed password
     if bcrypt.checkpw(password.encode("utf-8"), user["password"]):
-    # Password matches
+        # Password matches
         return jsonify({"message": "Login successful"}), 200
     else:
         return jsonify({"error": "Invalid credentials"}), 401
@@ -137,6 +148,13 @@ def add_cv():
     )
 
     return jsonify({"message": "CV uploaded successfully"}), 200
+
+@app.route("/employer/dashboard", methods=["POST"])
+def set_recruitment_pipeline():
+    documents = extract_user_cvs(db)
+    #input query instead of "recruitment pipeline"
+    rerank_cohere("Recruitment pipeline", documents)
+    
 
 if __name__ == "__main__":
     app.run(debug=True)
