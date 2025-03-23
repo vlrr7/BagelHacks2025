@@ -1,9 +1,11 @@
 "use client";
 
 import type React from "react";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
+import { checkAuth, User } from "@/lib/auth";
 
 import {
   Card,
@@ -27,6 +29,21 @@ import {
 import CandidateNavbar from "@/components/candidate-navbar";
 
 export default function CVUploadPage() {
+  const router = useRouter();
+  const [user, setUser] = useState<User | null>(null);
+  
+  useEffect(() => {
+    async function validateAuth() {
+      const userData = await checkAuth();
+      if (!userData) {
+        router.push('/login');
+        return;
+      }
+      setUser(userData);
+    }
+    validateAuth();
+  }, [router]);
+
   const [uploadState, setUploadState] = useState<
     "idle" | "uploading" | "success" | "error"
   >("idle");
@@ -139,6 +156,11 @@ export default function CVUploadPage() {
     hidden: { opacity: 0, y: 10 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
   };
+
+  // Don't render anything while checking auth
+  if (!user) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-background">

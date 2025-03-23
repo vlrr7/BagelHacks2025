@@ -26,20 +26,21 @@ def init_db():
 
 def extract_user_cvs(db):
     """
-    Extrait tous les utilisateurs avec leur _id et leur champ 'cv_pdf'.
-
-    Args:
-        db: Instance de la base de données MongoDB.
-
-    Returns:
-        Une liste de dictionnaires contenant '_id' et 'cv_pdf'.
+    Extract all users with CV data from users collection.
     """
-    collection = db["cvs"]  # Remplace par le nom réel de ta collection si nécessaire
-
+    # Use users collection instead of cvs
     return [
         {
-            "_id": str(doc["_id"]),  # On convertit l'ObjectId en string
-            "cv_pdf": doc["cv_pdf"]
+            "_id": str(doc["_id"]),
+            "cv_pdf": doc["cv_pdf"],
+            "email": doc["email"]
         }
-        for doc in collection.find({"cv_pdf": {"$exists": True}})
+        for doc in db.users.find({"cv_pdf": {"$exists": True}})
     ]
+
+# Add debug function
+def debug_print_user(db, email):
+    """Debug function to print user data"""
+    user = db.users.find_one({"email": email})
+    print(f"Debug - User data for {email}:", user)
+    return user

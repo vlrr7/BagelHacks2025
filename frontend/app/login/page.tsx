@@ -29,12 +29,11 @@ export default function LoginPage() {
     e.preventDefault();
     setIsLoading(true);
 
-
     try {
-      // Call the Flask backend /login endpoint
-      const response = await fetch("http://127.0.0.1:5000/login", {
+      const response = await fetch("http://localhost:5000/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: 'include',
         body: JSON.stringify({ email, password }),
       });
 
@@ -43,8 +42,18 @@ export default function LoginPage() {
       if (!response.ok) {
         alert(data.error || "Login failed");
       } else {
-        alert("Login successful!");
-        window.location.href = "/candidate/dashboard";
+        // Store user data in localStorage
+        localStorage.setItem('user', JSON.stringify(data.user));
+        
+        // Check account_type and redirect accordingly
+        const accountType = data.user?.account_type || 'candidate';
+        if (!accountType) {
+          console.error('No account type found in response:', data);
+          alert('Login successful but account type is missing');
+          return;
+        }
+        
+        window.location.href = `/${accountType}/dashboard`;
       }
     } catch (error) {
       console.error("Login error:", error);
@@ -53,7 +62,6 @@ export default function LoginPage() {
       setIsLoading(false);
     }
   }
-
 
   const fadeIn = {
     hidden: { opacity: 0, y: 20 },

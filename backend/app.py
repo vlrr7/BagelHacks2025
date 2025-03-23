@@ -1,10 +1,11 @@
-from database import init_db
+from database import init_db, debug_print_user
 import os
 from flask import Flask, request, jsonify, session
 from flask_cors import CORS
 from bson import Binary
 from dotenv import load_dotenv
 from flask_session import Session
+from datetime import timedelta
 
 import bcrypt
 from werkzeug.utils import secure_filename
@@ -24,6 +25,7 @@ app.config.update(
     SESSION_COOKIE_HTTPONLY=True,
     SESSION_COOKIE_SECURE=False,  # Set to True in production with HTTPS
     SESSION_COOKIE_SAMESITE='Lax',
+    PERMANENT_SESSION_LIFETIME=timedelta(days=7),  # Add this line
 )
 
 # Initialize Flask-Session
@@ -135,39 +137,97 @@ def login():
         return jsonify({"error": "User not found"}), 404
 
     if bcrypt.checkpw(password.encode("utf-8"), user_data["password"]):
-        user = User(user_data)
-        login_user(user)
-        session['user'] = user.to_dict()  # Store user data in session
+        session.permanent = True
+        session['user'] = {
+            'email': user_data['email'],
+            'first_name': user_data['first_name'],
+            'last_name': user_data['last_name'],
+            'account_type': user_data['account_type']
+        }
         return jsonify({
             "message": "Login successful",
-            "user": user.to_dict()
+            "user": session['user']
         }), 200
-    else:
-        return jsonify({"error": "Invalid credentials"}), 401
+    return jsonify({"error": "Invalid credentials"}), 401
 
+
+@app.route("/check-auth", methods=["GET"])
+def check_auth():
+    # First check session
+    user_data = session.get('user')
+    if user_data:
+        return jsonify(user_data)
+    
+    # If no session, check if user is logged in via flask-login
+    if current_user.is_authenticated:
+        return jsonify(current_user.to_dict())
+    
+    return jsonify({"error": "Not authenticated"}), 401
+
+@app.route("/logout", methods=["POST"])
+def logout():
+    session.pop('user', None)
+    return jsonify({"message": "Logged out successfully"}), 200
 
 @app.route("/candidate/cv-upload-api", methods=["POST"])
 def add_cv():
-    # Remove @login_required temporarily for testing
-    cv_file = request.files.get("cv")
-    if not cv_file:
-        return jsonify({"error": "Missing cv"}), 400
+    try:
+        user_data = session.get('user')
+        if not user_data:
+            print("No user in session")
+            return jsonify({"error": "Not authenticated"}), 401
 
-    file_content = cv_file.read()
-    binary_content = Binary(file_content)
+        cv_file = request.files.get("cv")
+        if not cv_file:
+            print("No file in request")
+            return jsonify({"error": "Missing cv"}), 400
 
-    # For testing, use a fixed email
-    user_email = "test@example.com"
+        file_content = cv_file.read()
+        binary_content = Binary(file_content)
 
-    result = db.users.update_one(
-        {"email": user_email},
-        {"$set": {"cv_pdf": binary_content}},
-        upsert=True
-    )
+        user_email = user_data.get('email')
+        if not user_email:
+            print("No email in session data")
+            return jsonify({"error": "Invalid session data"}), 401
 
-    if result.acknowledged:
-        return jsonify({"message": "CV uploaded successfully"}), 200
-    return jsonify({"error": "Failed to update CV"}), 500
+        print(f"Attempting to update CV for user: {user_email}")
+        print(f"File size: {len(file_content)} bytes")
+
+        # First verify user exists
+        user = db.users.find_one({"email": user_email})
+        if not user:
+            print(f"User not found in database: {user_email}")
+            return jsonify({"error": "User not found"}), 404
+
+        # Try to update with detailed error logging
+        try:
+            result = db.users.update_one(
+                {"email": user_email},
+                {"$set": {"cv_pdf": binary_content}}
+            )
+            print(f"Update operation result: {result.raw_result}")
+            print(f"Modified count: {result.modified_count}")
+            print(f"Matched count: {result.matched_count}")
+            print(f"Upserted ID: {result.upserted_id}")
+            
+        except Exception as db_error:
+            print(f"Database operation error: {str(db_error)}")
+            print(f"Error type: {type(db_error)}")
+            return jsonify({"error": f"Database error: {str(db_error)}"}), 500
+
+        # Verify the update
+        updated_user = db.users.find_one({"email": user_email})
+        if "cv_pdf" in updated_user:
+            print("CV successfully stored in database")
+            return jsonify({"message": "CV uploaded successfully"}), 200
+        else:
+            print("CV not found in database after update")
+            return jsonify({"error": "Failed to verify CV upload"}), 500
+
+    except Exception as e:
+        print(f"Unexpected error: {str(e)}")
+        print(f"Error type: {type(e)}")
+        return jsonify({"error": f"Server error: {str(e)}"}), 500
 
 @app.route("/employer/dashboard", methods=["POST"])
 def set_recruitment_pipeline():
@@ -176,22 +236,43 @@ def set_recruitment_pipeline():
     rerank_cohere("Recruitment pipeline", documents)
 
 @app.route('/candidate/cv-delete', methods=['POST'])
-@login_required
 def delete_cv():
-    user_email = session.get('user', {}).get('email')
+    user_data = session.get('user')
+    if not user_data:
+        return jsonify({"error": "Not authenticated"}), 401
+
+    user_email = user_data.get('email')
     if not user_email:
-        return jsonify({"error": "User not authenticated"}), 401
+        return jsonify({"error": "Invalid session data"}), 401
 
-    result = db.users.update_one(
-        {"email": user_email},
-        {"$unset": {"cv_pdf": ""}}
-    )
+    try:
+        # First check if the user exists and has a CV
+        user = db.users.find_one({"email": user_email})
+        if not user:
+            print(f"User not found: {user_email}")
+            return jsonify({"error": "User not found"}), 404
+            
+        if "cv_pdf" not in user:
+            print(f"No CV found for user: {user_email}")
+            return jsonify({"error": "No CV found"}), 404
 
-    if result.modified_count > 0:
-        return jsonify({"message": "CV deleted successfully"}), 200
-    else:
-        return jsonify({"error": "Failed to delete CV"}), 500
-    
+        # Now try to delete the CV
+        result = db.users.update_one(
+            {"email": user_email},
+            {"$unset": {"cv_pdf": 1}}  # Use 1 instead of ""
+        )
+        
+        print(f"Delete operation result: {result.raw_result}")  # Debug print
+        
+        if result.modified_count > 0:
+            return jsonify({"message": "CV deleted successfully"}), 200
+        else:
+            print(f"No modifications made for user: {user_email}")
+            return jsonify({"error": "No changes made"}), 400
+            
+    except Exception as e:
+        print(f"Database error: {e}")
+        return jsonify({"error": f"Database error: {str(e)}"}), 500
 
 if __name__ == "__main__":
     app.run(debug=True)
