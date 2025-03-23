@@ -8,7 +8,7 @@ export interface User {
 
 export async function checkAuth(): Promise<User | null> {
     try {
-        const response = await fetch('http://localhost:10000/check-auth', {
+        const response = await fetch('https://cvuebackend.onrender.com/check-auth', {
             credentials: 'include',
         });
 
@@ -31,7 +31,7 @@ export async function checkAuth(): Promise<User | null> {
 
 export async function logout(router: any): Promise<void> {
     try {
-        const response = await fetch('http://localhost:10000/logout', {
+        const response = await fetch('https://cvuebackend.onrender.com/logout', {
             method: 'POST',
             credentials: 'include'
         });

@@ -45,7 +45,7 @@ Session(app)
 # Then initialize CORS
 CORS(app, resources={
     r"/*": {
-        "origins": ["http://localhost:3000"],
+        "origins": ["https://cvue.onrender.com/, https://cvuebackend.onrender.com"],
         "supports_credentials": True,
         "allow_headers": ["Content-Type"],
         "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
