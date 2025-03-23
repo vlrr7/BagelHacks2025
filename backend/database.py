@@ -1,17 +1,13 @@
-# backend/database.py
-
 import os
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 from dotenv import load_dotenv
-from flask import current_app
 
-# If you prefer to keep your URI secret, create a .env file and load from there:
-# load_dotenv()
-# uri = os.getenv("MONGODB_URI")
+# Load environment variables from a .env file if it exists
+load_dotenv()
 
-# For now, we’ll use your existing hardcoded URI:
-uri = current_app.config["MONGO_MONGODB_URI"]
+# Retrieve the MongoDB URI from environment variables
+uri = os.getenv("MONGODB_URI", "fallback-secret-key")
 
 # Create a new client and connect to the server
 client = MongoClient(uri, server_api=ServerApi('1'))
@@ -23,7 +19,7 @@ try:
 except Exception as e:
     print("Error pinging MongoDB:", e)
 
-# Access a specific database (e.g., "bd" or "bagelhacksdb", whichever you prefer)
+# Access a specific database (for example, "bd")
 db = client["bd"]
 
 # Now you can export `db` for use in other files
