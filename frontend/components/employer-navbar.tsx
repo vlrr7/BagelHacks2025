@@ -25,21 +25,14 @@ import {
   PlusCircle,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { logout } from "@/lib/auth";
 
 export default function EmployerNavbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const router = useRouter();
 
   const handleLogout = async () => {
-    try {
-      await fetch("http://localhost:5000/logout", {
-        method: "POST",
-        credentials: "include",
-      });
-      router.push("/login");
-    } catch (error) {
-      console.error("Logout failed:", error);
-    }
+    await logout(router);
   };
 
   return (
