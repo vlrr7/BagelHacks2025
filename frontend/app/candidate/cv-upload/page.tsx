@@ -4,6 +4,7 @@ import type React from "react";
 import { useState, useRef } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
+
 import {
   Card,
   CardContent,
@@ -31,6 +32,30 @@ export default function CVUploadPage() {
   >("idle");
   const [dragActive, setDragActive] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const deleteCV = async (): Promise<void> => {
+    try {
+      const response = await fetch("http://127.0.0.1:5000/candidate/cv-delete", {
+        method: "POST",
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        alert(data.message);
+        setUploadState("idle"); 
+      } else {
+        const errorText = await response.text();
+        console.error("Delete error! Status:", response.status, "Response text:", errorText);
+        alert("Failed to delete CV: " + errorText);
+      }
+    } catch (e) {
+      console.error("Network error:", e);
+      alert("Network error: Unable to connect to the server");
+    }
+  };
 
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault();
@@ -104,30 +129,6 @@ export default function CVUploadPage() {
           console.error("Response is not JSON. Response text:", responseText);
           setUploadState("error");
       }
-
-      const deleteCV = async (): Promise<void> => {
-        try {
-          const response = await fetch("http://127.0.0.1:5000/candidate/cv-delete", {
-            method: "POST",
-            headers: {
-              'Content-Type': 'application/json',
-            }
-          });
-      
-          if (response.ok) {
-            const data = await response.json();
-            alert(data.message);
-            setUploadState("idle"); 
-          } else {
-            const errorText = await response.text();
-            console.error("Delete error! Status:", response.status, "Response text:", errorText);
-            alert("Failed to delete CV: " + errorText);
-          }
-        } catch (e) {
-          console.error("Network error:", e);
-          alert("Network error: Unable to connect to the server");
-        }
-      };
   
   } catch (e) {
       console.error("Upload error:", e);
