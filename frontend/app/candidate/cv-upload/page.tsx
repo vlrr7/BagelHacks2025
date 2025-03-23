@@ -63,11 +63,16 @@ export default function CVUploadPage() {
 
     setUploadState("uploading");
 
-    fetch("http://127.0.0.1:5000/cv-upload", {
+    fetch("cv-upload", {
       method: "POST",
       body: formData,
     })
-      .then((response) => response.json())
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+      })
       .then((data) => {
         if (data.message === "CV uploaded successfully") {
           setUploadState("success");
@@ -75,7 +80,8 @@ export default function CVUploadPage() {
           setUploadState("error");
         }
       })
-      .catch(() => {
+      .catch((e) => {
+        console.error("Upload error:", e);
         setUploadState("error");
       });
     

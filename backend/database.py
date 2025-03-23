@@ -2,12 +2,13 @@ import os
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 from dotenv import load_dotenv
+from flask import current_app
 
 load_dotenv()
 
 def init_db():
     # Read the URI directly from environment variables instead of current_app:
-    uri = os.getenv("MONGODB_URI")
+    uri = current_app.config["MONGODB_URI"]
     if not uri:
         raise Exception("MONGODB_URI is not set in the environment.")
 
