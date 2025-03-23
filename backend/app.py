@@ -364,5 +364,9 @@ def get_raw_cv():
         print(f"Error getting CV: {str(e)}")
         return jsonify({"error": "Failed to get CV"}), 500
 
+
 if __name__ == "__main__":
-    app.run(debug=True)
+    # Use the PORT environment variable (default to 10000 if not set)
+    port = int(os.environ.get("PORT", 10000))
+    
+    app.run(host="0.0.0.0", port=port, debug=False)
