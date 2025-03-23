@@ -3,7 +3,7 @@
 import type React from "react";
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";  // Changed from next/router
+import { useRouter } from "next/navigation"; // Changed from next/router
 import { motion } from "framer-motion";
 import { checkAuth } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
@@ -35,7 +35,7 @@ export default function LoginPage() {
       const response = await fetch("http://localhost:5000/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        credentials: 'include',
+        credentials: "include",
         body: JSON.stringify({ email, password }),
       });
 
@@ -45,17 +45,19 @@ export default function LoginPage() {
         alert(data.error || "Login failed");
       } else {
         // Store user data in localStorage
-        localStorage.setItem('user', JSON.stringify(data.user));
-        
+        localStorage.setItem("user", JSON.stringify(data.user));
+
         // Check account_type and redirect accordingly
-        const accountType = data.user?.account_type || 'candidate';
+        const accountType = data.user?.account_type || "candidate";
         if (!accountType) {
-          console.error('No account type found in response:', data);
-          alert('Login successful but account type is missing');
+          console.error("No account type found in response:", data);
+          alert("Login successful but account type is missing");
           return;
         }
-        
-        window.location.href = `/${accountType}/dashboard`;
+
+        window.location.href = `/${accountType}/${
+          accountType === "employer" ? "dashboard" : "cv-upload"
+        }`;
       }
     } catch (error) {
       console.error("Login error:", error);
@@ -63,14 +65,18 @@ export default function LoginPage() {
     } finally {
       setIsLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
     // Remove any error messages about authentication
     const checkCurrentAuth = async () => {
       const user = await checkAuth();
       if (user) {
-        router.push(user.account_type === 'employer' ? '/employer/dashboard' : '/candidate/dashboard');
+        router.push(
+          user.account_type === "employer"
+            ? "/employer/dashboard"
+            : "/candidate/dashboard"
+        );
       }
     };
     checkCurrentAuth();

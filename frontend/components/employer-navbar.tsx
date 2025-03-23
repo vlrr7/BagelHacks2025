@@ -64,12 +64,6 @@ export default function EmployerNavbar() {
                 Search Candidates
               </Link>
               <Link
-                href="/feedback"
-                className="text-foreground/80 hover:text-foreground transition-colors"
-              >
-                Feedback
-              </Link>
-              <Link
                 href="/communication"
                 className="text-foreground/80 hover:text-foreground transition-colors"
               >
@@ -79,11 +73,6 @@ export default function EmployerNavbar() {
           </div>
 
           <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" className="relative">
-              <Bell size={20} />
-              <span className="absolute top-0 right-0 h-2 w-2 rounded-full bg-primary"></span>
-            </Button>
-
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
@@ -123,7 +112,10 @@ export default function EmployerNavbar() {
                   <span>Settings</span>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem className="cursor-pointer" onClick={handleLogout}>
+                <DropdownMenuItem
+                  className="cursor-pointer"
+                  onClick={handleLogout}
+                >
                   <LogOut className="mr-2 h-4 w-4" />
                   <span>Log out</span>
                 </DropdownMenuItem>

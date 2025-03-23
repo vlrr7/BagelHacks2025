@@ -48,22 +48,10 @@ export default function CandidateNavbar() {
 
             <nav className="hidden md:flex ml-10 space-x-6">
               <Link
-                href="/candidate/dashboard"
-                className="text-foreground/80 hover:text-foreground transition-colors"
-              >
-                Dashboard
-              </Link>
-              <Link
                 href="/candidate/cv-upload"
                 className="text-foreground/80 hover:text-foreground transition-colors"
               >
                 CV Upload
-              </Link>
-              <Link
-                href="/candidate/trends"
-                className="text-foreground/80 hover:text-foreground transition-colors"
-              >
-                Career Trends
               </Link>
               <Link
                 href="/communication"
@@ -75,11 +63,6 @@ export default function CandidateNavbar() {
           </div>
 
           <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" className="relative">
-              <Bell size={20} />
-              <span className="absolute top-0 right-0 h-2 w-2 rounded-full bg-primary"></span>
-            </Button>
-
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
@@ -115,7 +98,10 @@ export default function CandidateNavbar() {
                   <span>Settings</span>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem className="cursor-pointer" onClick={handleLogout}>
+                <DropdownMenuItem
+                  className="cursor-pointer"
+                  onClick={handleLogout}
+                >
                   <LogOut className="mr-2 h-4 w-4" />
                   <span>Log out</span>
                 </DropdownMenuItem>
