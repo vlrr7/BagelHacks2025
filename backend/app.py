@@ -9,7 +9,7 @@ from flask_session import Session
 from datetime import timedelta
 import bcrypt
 from werkzeug.utils import secure_filename
-from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
+from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from models import User  # Your custom User model from models.py
 from cohere_utils import rerank_cohere  # Updated import for other features
 
@@ -33,13 +33,13 @@ app.config.update(
     SESSION_MONGODB_DB='bd',
     SESSION_MONGODB_COLLECT='sessions',
     SESSION_COOKIE_HTTPONLY=True,
-    SESSION_COOKIE_SECURE=False,  # Set to True in production with HTTPS
+    SESSION_COOKIE_SECURE=True,  # Use True in production (HTTPS)
     SESSION_COOKIE_SAMESITE='Lax',
     PERMANENT_SESSION_LIFETIME=timedelta(days=7),
 )
 Session(app)
 
-# Initialize CORS (allow credentials)
+# Initialize CORS (allow credentials) – include production origin
 CORS(app, resources={
     r"/*": {
         "origins": ["http://localhost:3000", "http://127.0.0.1:3000", "https://cvue.onrender.com"],
@@ -73,10 +73,6 @@ def home():
 ############################################
 @app.route("/register", methods=["POST"])
 def register():
-    """
-    Register a new user.
-    Body: { "email": "<str>", "password": "<str>", "firstName": "<str>", "lastName": "<str>", "accountType": "<str>" }
-    """
     data = request.get_json()
     if not data:
         return jsonify({"error": "No data provided"}), 400
@@ -90,13 +86,10 @@ def register():
     if not all([email, password, first_name, last_name, account_type]):
         return jsonify({"error": "Missing required fields"}), 400
 
-    # Check if user already exists
     if db.users.find_one({"email": email}):
         return jsonify({"error": "User already exists"}), 409
 
-    # Hash the password using bcrypt
     hashed_pw = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt())
-
     user_data = {
         "email": email,
         "password": hashed_pw,
@@ -104,7 +97,6 @@ def register():
         "last_name": last_name,
         "account_type": account_type
     }
-
     db.users.insert_one(user_data)
 
     # Create a blank profile for the new user in a separate collection
@@ -120,10 +112,6 @@ def register():
 
 @app.route("/login", methods=["POST"])
 def login():
-    """
-    Login an existing user.
-    Body: { "email": "<str>", "password": "<str>" }
-    """
     data = request.get_json()
     if not data:
         return jsonify({"error": "No data provided"}), 400
@@ -149,6 +137,7 @@ def login():
             "message": "Login successful",
             "user": session['user']
         }), 200
+
     return jsonify({"error": "Invalid credentials"}), 401
 
 @app.route("/logout", methods=["POST"])
@@ -250,7 +239,4 @@ def handle_ice_candidate(data):
 # --- Main entry point ---
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 10000))
-    # For local testing, you can run with:
-    # socketio.run(app, host="0.0.0.0", port=port, debug=False)
-    # In production on Render, we recommend using Gunicorn with Eventlet (see Procfile below)
     socketio.run(app, host="0.0.0.0", port=port, debug=False, allow_unsafe_werkzeug=True)
