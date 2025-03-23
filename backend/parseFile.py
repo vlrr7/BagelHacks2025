@@ -1,22 +1,24 @@
 import PyPDF2
+import io
 
-def parse_pdf_to_text(file_path):
-    with open(file_path, 'rb') as fichier:
-        reader = PyPDF2.PdfReader(fichier)
-        num_pages = len(reader.pages)
+def parse_pdf_to_text(binary_data):
+    try:
+        # Create a binary stream from the data
+        pdf_stream = io.BytesIO(binary_data)
+        
+        # Create PDF reader object
+        reader = PyPDF2.PdfReader(pdf_stream)
         text = []
 
-        for page in range(num_pages):
-            page_text = reader.pages[page].extract_text()
+        # Extract text from each page
+        for page in reader.pages:
+            page_text = page.extract_text()
             if page_text:
                 text.append(page_text)
-            else:
-                text.append(f"Page {page + 1} sans texte identifiable.")
 
-    text_complet = '\n'.join(text)
-    return text_complet
-
-if __name__ == "__main__":
-    file_path='user/pdf/test.pdf'
-    text_extrait = parse_pdf_to_text(file_path)
-    print(text_extrait)
+        # Join all text together
+        text_complete = '\n'.join(text)
+        return text_complete
+    except Exception as e:
+        print(f"PDF parsing error: {str(e)}")
+        return None
