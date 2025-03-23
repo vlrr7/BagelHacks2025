@@ -6,14 +6,17 @@ from flask_cors import CORS
 from dotenv import load_dotenv
 import bcrypt
 
-# Import the `db` object from database.py
-from database import db
-
 # Load environment variables if you want to use them (e.g., SECRET_KEY)
 load_dotenv()
 
 app = Flask(__name__)
 app.config["MONGO_MONGODB_URI"] = os.getenv("MONGODB_URI", "fallback-secret-key")
+
+# Import the `db` object from database.py
+from database import init_db
+with app.app_context():
+    db = init_db()
+
 
 # Allow CORS requests (from your frontend on port 3000, for instance)
 CORS(app, resources={r"/*": {"origins": "*"}})
