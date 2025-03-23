@@ -1,10 +1,13 @@
-from cohere import Client, ClientV2
-from parseFile import parse_pdf_to_text
+import cohere
 import os
+from dotenv import load_dotenv
+from parseFile import parse_pdf_to_text
+
+load_dotenv()
 
 def ask_cohere(query):
 
-    co = ClientV2(os.getenv("COHERE_API_KEY"))
+    co = cohere.Client(os.getenv("COHERE_API_KEY"))
     response = co.chat(
         model="command-a-03-2025",
         messages=[{"role": "user", "content": query}],
@@ -12,33 +15,32 @@ def ask_cohere(query):
 
     return(response)
 
-# query: str, documents: List[str]
+def rerank_cohere(query, documents):
+    try:
+        co = cohere.Client(os.environ.get('COHERE_API_KEY'))
+        
+        # Prepare documents for reranking
+        docs = [{"text": doc["text"], "email": doc["email"]} for doc in documents]
+        
+        # Get reranking results
+        results = co.rerank(
+            query=query,
+            documents=[doc["text"] for doc in docs],
+            top_n=len(docs),
+            model='rerank-english-v2.0'
+        )
+        
+        # Format results with email and scores
+        ranked_results = []
+        for result in results:
+            ranked_results.append({
+                "email": docs[result.index]["email"],
+                "text": docs[result.index]["text"],
+                "relevance_score": result.relevance_score
+            })
+            
+        return ranked_results
 
-
-def rerank_cohere(query, user_cvs, top_n=3):
-    for user_cv in user_cvs:
-        user_cv["cv_pdf"] = parse_pdf_to_text(user_cv["cv_pdf"])
-    
-    client = Client(
-        client_name="YOUR_CLIENT_NAME",  # ou tu peux le retirer
-        token=os.getenv("COHERE_API_KEY")
-    )
-
-    response = client.rerank(  # ou client.v2.rerank selon la version
-        model="rerank-v3.5",
-        query=query,
-        documents=user_cvs["cv_pdf"],
-        top_n=top_n
-    )
-
-    relevant_results = []
-    for result in response.results:
-        if result.relevance_score > 0.5:
-            user_cvs[result["index"]]["relevance_score"] = result.relevance_score
-            relevant_results.append({user_cvs[result["index"]]})
-    
-    #Keep only 10 results
-    return relevant_results[:10]
-    
-    # Tu peux retourner les documents reclassés
-    #return [result.document['text'] for result in response.results]
+    except Exception as e:
+        print(f"Cohere reranking error: {str(e)}")
+        return []

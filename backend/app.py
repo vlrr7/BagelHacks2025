@@ -280,5 +280,41 @@ def delete_cv():
         print(f"Database error: {e}")
         return jsonify({"error": f"Database error: {str(e)}"}), 500
 
+@app.route("/search-candidates", methods=["POST"])
+def search_candidates():
+    try:
+        data = request.get_json()
+        search_query = data.get('query')
+        
+        if not search_query:
+            return jsonify({"error": "No search query provided"}), 400
+
+        # Get all CVs from the database
+        documents = extract_user_cvs(db)
+        if not documents:
+            return jsonify({"error": "No CVs found in the database"}), 404
+
+        # Use Cohere to rank the documents
+        ranked_results = rerank_cohere(search_query, documents)
+        
+        # Format results with user information
+        formatted_results = []
+        for result in ranked_results:
+            user = db.users.find_one({"email": result["email"]})
+            if user:
+                formatted_results.append({
+                    "email": result["email"],
+                    "firstName": user.get("first_name"),
+                    "lastName": user.get("last_name"),
+                    "preview": result["text"][:200] + "...",  # First 200 characters of CV
+                    "relevanceScore": result["relevance_score"]
+                })
+
+        return jsonify({"results": formatted_results}), 200
+
+    except Exception as e:
+        print(f"Search error: {str(e)}")
+        return jsonify({"error": f"Search failed: {str(e)}"}), 500
+
 if __name__ == "__main__":
     app.run(debug=True)
