@@ -1,8 +1,7 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
-
-import type React from "react";
+import React from "react";
 
 import { useState } from "react";
 import { motion } from "framer-motion";
@@ -19,13 +18,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   MessageSquare,
-  Video,
-  Phone,
   Send,
-  Paperclip,
-  Mic,
-  Calendar,
-  Clock,
   ChevronLeft,
   MoreVertical,
 } from "lucide-react";
@@ -38,6 +31,7 @@ import {
 import CandidateNavbar from "@/components/candidate-navbar";
 
 export default function CommunicationPage() {
+  const messagesEndRef = React.useRef<HTMLDivElement>(null);
   const [activeChat, setActiveChat] = useState<number | null>(0);
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([
@@ -150,7 +144,22 @@ export default function CommunicationPage() {
     }
   };
 
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSendMessage();
+    }
+  };
+
   const pushMessageToChat = (msg_text: string) => {};
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  React.useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -172,11 +181,8 @@ export default function CommunicationPage() {
         <motion.div initial="hidden" animate="visible" variants={fadeIn}>
           <Tabs defaultValue="messages">
             <TabsList className="mb-6">
-              <TabsTrigger value="messages" className="gap-2">
+              <TabsTrigger value="messages" className="gap-2 hover:bg-transparent data-[state=active]:bg-transparent">
                 <MessageSquare size={16} /> Messages
-              </TabsTrigger>
-              <TabsTrigger value="calls" className="gap-2">
-                <Phone size={16} /> Calls
               </TabsTrigger>
             </TabsList>
 
@@ -247,47 +253,42 @@ export default function CommunicationPage() {
                     </div>
 
                     <div
-                      className={`md:col-span-2 lg:col-span-3 flex flex-col ${
+                      className={`md:col-span-2 lg:col-span-3 flex flex-col h-[600px] ${
                         activeChat === null && "hidden md:flex"
                       }`}
                     >
                       {activeChat !== null ? (
                         <>
-                          <div className="border-b border-border p-4 flex justify-between items-center">
-                            <div className="flex items-center gap-3">
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                className="md:hidden"
-                                onClick={() => setActiveChat(null)}
-                              >
-                                <ChevronLeft size={20} />
-                              </Button>
-                              <Avatar>
-                                <AvatarImage
-                                  src={`/placeholder.svg?height=40&width=40`}
-                                  alt={chats[activeChat].name}
-                                />
-                                <AvatarFallback>
-                                  {chats[activeChat].name.charAt(0)}
-                                </AvatarFallback>
-                              </Avatar>
-                              <div>
-                                <h3 className="font-medium">
-                                  {chats[activeChat].name}
-                                </h3>
-                                <p className="text-sm text-muted-foreground">
-                                  {chats[activeChat].company}
-                                </p>
+                          <div className="flex-none border-b border-border p-4">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-3">
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="md:hidden"
+                                  onClick={() => setActiveChat(null)}
+                                >
+                                  <ChevronLeft size={20} />
+                                </Button>
+                                <Avatar>
+                                  <AvatarImage
+                                    src={`/placeholder.svg?height=40&width=40`}
+                                    alt={chats[activeChat].name}
+                                  />
+                                  <AvatarFallback>
+                                    {chats[activeChat].name.charAt(0)}
+                                  </AvatarFallback>
+                                </Avatar>
+                                <div>
+                                  <h3 className="font-medium">
+                                    {chats[activeChat].name}
+                                  </h3>
+                                  <p className="text-sm text-muted-foreground">
+                                    {chats[activeChat].company}
+                                  </p>
+                                </div>
                               </div>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <Button variant="ghost" size="icon">
-                                <Phone size={20} />
-                              </Button>
-                              <Button variant="ghost" size="icon">
-                                <Video size={20} />
-                              </Button>
+                              
                               <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
                                   <Button variant="ghost" size="icon">
@@ -312,47 +313,48 @@ export default function CommunicationPage() {
                             </div>
                           </div>
 
-                          <div className="flex-grow overflow-y-auto p-4 space-y-4">
-                            {messages.map((msg) => (
-                              <div
-                                key={msg.id}
-                                className={`flex ${
-                                  msg.sender === "me"
-                                    ? "justify-end"
-                                    : "justify-start"
-                                }`}
-                              >
+                          <div className="flex-1 overflow-y-auto">
+                            <div className="p-4 space-y-4">
+                              {messages.map((msg) => (
                                 <div
-                                  className={`max-w-[80%] md:max-w-[70%] rounded-lg p-3 ${
+                                  key={msg.id}
+                                  className={`flex ${
                                     msg.sender === "me"
-                                      ? "bg-primary text-primary-foreground"
-                                      : "bg-muted"
+                                      ? "justify-end"
+                                      : "justify-start"
                                   }`}
                                 >
-                                  <p>{msg.text}</p>
-                                  <p
-                                    className={`text-xs mt-1 ${
+                                  <div
+                                    className={`max-w-[80%] md:max-w-[70%] rounded-lg p-3 ${
                                       msg.sender === "me"
-                                        ? "text-primary-foreground/70"
-                                        : "text-muted-foreground"
+                                        ? "bg-primary text-primary-foreground"
+                                        : "bg-muted"
                                     }`}
                                   >
-                                    {msg.time}
-                                  </p>
+                                    <p>{msg.text}</p>
+                                    <p
+                                      className={`text-xs mt-1 ${
+                                        msg.sender === "me"
+                                          ? "text-primary-foreground/80"
+                                          : "text-muted-foreground"
+                                      }`}
+                                    >
+                                      {msg.time}
+                                    </p>
+                                  </div>
                                 </div>
-                              </div>
-                            ))}
+                              ))}
+                              <div ref={messagesEndRef} />
+                            </div>
                           </div>
 
-                          <div className="border-t border-border p-4">
+                          <div className="flex-none border-t border-border p-4">
                             <div className="flex items-center gap-2">
-                              <Button variant="ghost" size="icon">
-                                <Paperclip size={20} />
-                              </Button>
                               <Input
                                 placeholder="Type a message..."
                                 value={message}
                                 onChange={(e) => setMessage(e.target.value)}
+                                onKeyDown={handleKeyPress}
                                 className="flex-grow"
                               />
                               <Button
@@ -379,84 +381,6 @@ export default function CommunicationPage() {
                           </div>
                         </div>
                       )}
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-            <TabsContent value="calls" className="mt-0">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Recent Calls</CardTitle>
-                  <CardDescription>
-                    View your recent and upcoming calls with recruiters
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div className="border border-border rounded-lg p-4">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          <Avatar>
-                            <AvatarImage
-                              src={`/placeholder.svg?height=40&width=40`}
-                              alt="James Wilson"
-                            />
-                            <AvatarFallback>JW</AvatarFallback>
-                          </Avatar>
-                          <div>
-                            <h3 className="font-medium">James Wilson</h3>
-                            <p className="text-sm text-muted-foreground">
-                              InnovateSoft
-                            </p>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Badge
-                            variant="outline"
-                            className="flex items-center gap-1"
-                          >
-                            <Clock size={12} />
-                            <span>Yesterday, 3:30 PM</span>
-                          </Badge>
-                          <Button size="sm" variant="outline">
-                            <Phone size={14} className="mr-1" /> Call Back
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="border border-border rounded-lg p-4">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          <Avatar>
-                            <AvatarImage
-                              src={`/placeholder.svg?height=40&width=40`}
-                              alt="Emily Chen"
-                            />
-                            <AvatarFallback>EC</AvatarFallback>
-                          </Avatar>
-                          <div>
-                            <h3 className="font-medium">Emily Chen</h3>
-                            <p className="text-sm text-muted-foreground">
-                              DesignStudio
-                            </p>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Badge
-                            variant="outline"
-                            className="flex items-center gap-1 bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-300 border-green-200 dark:border-green-800"
-                          >
-                            <Calendar size={12} />
-                            <span>Tomorrow, 11:00 AM</span>
-                          </Badge>
-                          <Button size="sm">
-                            <Video size={14} className="mr-1" /> Join
-                          </Button>
-                        </div>
-                      </div>
                     </div>
                   </div>
                 </CardContent>
