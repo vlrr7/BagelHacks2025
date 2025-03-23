@@ -32,7 +32,7 @@ export default function SearchCandidatesPage() {
     setError('');
     
     try {
-      const response = await fetch('http://localhost:5000/search-candidates', {
+      const response = await fetch('http://localhost:10000/search-candidates', {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -128,7 +128,7 @@ export default function SearchCandidatesPage() {
         <div className="w-full h-[95vh]">
           <iframe 
             key={selectedCV?.email} // Add key to force iframe refresh
-            src={selectedCV ? `http://localhost:5000/candidate/raw-cv?email=${encodeURIComponent(selectedCV.email)}` : ''}
+            src={selectedCV ? `http://localhost:10000/candidate/raw-cv?email=${encodeURIComponent(selectedCV.email)}` : ''}
             className="w-full h-full border-0"
             title="CV Preview"
           />

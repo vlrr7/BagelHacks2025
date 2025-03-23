@@ -32,7 +32,7 @@ export default function LoginPage() {
     setIsLoading(true);
 
     try {
-      const response = await fetch("http://localhost:5000/login", {
+      const response = await fetch("http://localhost:10000/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: 'include',
@@ -66,11 +66,11 @@ export default function LoginPage() {
   }
 
   useEffect(() => {
-    // Remove any error messages about authentication
     const checkCurrentAuth = async () => {
       const user = await checkAuth();
       if (user) {
-        router.push(user.account_type === 'employer' ? '/employer/dashboard' : '/candidate/dashboard');
+        // Silently redirect if user is already authenticated
+        router.replace(user.account_type === 'employer' ? '/employer/dashboard' : '/candidate/dashboard');
       }
     };
     checkCurrentAuth();

@@ -35,7 +35,7 @@ export default function EmployerNavbar() {
   useEffect(() => {
     const fetchUserInfo = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/user-info', {
+        const response = await fetch('http://localhost:10000/api/user-info', {
           credentials: 'include'
         });
         if (response.ok) {
