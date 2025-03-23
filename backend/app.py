@@ -18,20 +18,31 @@ from models import User
 load_dotenv()
 
 app = Flask(__name__)
+
+# First set the MongoDB URI
+app.config["MONGODB_URI"] = os.environ.get('MONGODB_URI')  # Remove the trailing comma!
+
+# Initialize the database connection first
+with app.app_context():
+    db = init_db()
+
+# Then configure the session with the existing MongoDB connection
 app.config.update(
     SECRET_KEY=os.environ.get('SECRET_KEY', 'dev'),
-    MONGODB_URI=os.environ.get('MONGODB_URI'),
-    SESSION_TYPE='filesystem',
+    SESSION_TYPE='mongodb',
+    SESSION_MONGODB=db.client,  # Use the client from our db connection
+    SESSION_MONGODB_DB='bd',
+    SESSION_MONGODB_COLLECT='sessions',
     SESSION_COOKIE_HTTPONLY=True,
     SESSION_COOKIE_SECURE=False,  # Set to True in production with HTTPS
     SESSION_COOKIE_SAMESITE='Lax',
     PERMANENT_SESSION_LIFETIME=timedelta(days=7),  # Add this line
 )
 
-# Initialize Flask-Session
+# Initialize Session after all configs are set
 Session(app)
 
-# Configure CORS
+# Then initialize CORS
 CORS(app, resources={
     r"/*": {
         "origins": ["http://localhost:3000"],
@@ -40,11 +51,6 @@ CORS(app, resources={
         "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
     }
 })
-
-# Import the `db` object from database.py
-db = None
-with app.app_context():
-    db = init_db()
 
 
 # Initialize the login manager
