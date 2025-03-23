@@ -1,23 +1,37 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import Link from "next/link"
-import { motion } from "framer-motion"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Switch } from "@/components/ui/switch"
-import { Label } from "@/components/ui/label"
-import { Check, HelpCircle } from "lucide-react"
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { useState } from "react";
+import Link from "next/link";
+import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import { Check, HelpCircle } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export default function PricingPage() {
-  const [billingCycle, setBillingCycle] = useState<"monthly" | "annual">("monthly")
+  const [billingCycle, setBillingCycle] = useState<"monthly" | "annual">(
+    "monthly",
+  );
 
   const fadeIn = {
     hidden: { opacity: 0, y: 10 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
-  }
+  };
 
   const staggerContainer = {
     hidden: { opacity: 0 },
@@ -27,24 +41,33 @@ export default function PricingPage() {
         staggerChildren: 0.1,
       },
     },
-  }
+  };
 
   return (
     <div className="min-h-screen bg-background">
       <header className="container mx-auto py-6 flex justify-between items-center">
         <div className="flex items-center gap-2">
           <Link href="/" className="text-2xl font-bold text-primary">
-            TalentConnect
+            CVue
           </Link>
         </div>
         <nav className="hidden md:flex gap-6">
-          <Link href="/features" className="text-foreground/80 hover:text-foreground transition-colors">
+          <Link
+            href="/features"
+            className="text-foreground/80 hover:text-foreground transition-colors"
+          >
             Features
           </Link>
-          <Link href="/pricing" className="text-foreground/80 hover:text-foreground transition-colors">
+          <Link
+            href="/pricing"
+            className="text-foreground/80 hover:text-foreground transition-colors"
+          >
             Pricing
           </Link>
-          <Link href="/about" className="text-foreground/80 hover:text-foreground transition-colors">
+          <Link
+            href="/about"
+            className="text-foreground/80 hover:text-foreground transition-colors"
+          >
             About
           </Link>
         </nav>
@@ -65,22 +88,33 @@ export default function PricingPage() {
           animate="visible"
           variants={fadeIn}
         >
-          <h1 className="text-4xl md:text-5xl font-bold mb-6">Pricing Plans for Every Hiring Need</h1>
+          <h1 className="text-4xl md:text-5xl font-bold mb-6">
+            Pricing Plans for Every Hiring Need
+          </h1>
           <p className="text-xl text-foreground/80 mb-10">
-            Choose the perfect plan for your recruitment goals, with flexible options for businesses of all sizes.
+            Choose the perfect plan for your recruitment goals, with flexible
+            options for businesses of all sizes.
           </p>
 
           <div className="flex items-center justify-center gap-3 mb-12">
-            <Label htmlFor="billing-toggle" className={billingCycle === "monthly" ? "font-medium" : ""}>
+            <Label
+              htmlFor="billing-toggle"
+              className={billingCycle === "monthly" ? "font-medium" : ""}
+            >
               Monthly
             </Label>
             <Switch
               id="billing-toggle"
               checked={billingCycle === "annual"}
-              onCheckedChange={(checked) => setBillingCycle(checked ? "annual" : "monthly")}
+              onCheckedChange={(checked) =>
+                setBillingCycle(checked ? "annual" : "monthly")
+              }
             />
             <div className="flex items-center gap-1.5">
-              <Label htmlFor="billing-toggle" className={billingCycle === "annual" ? "font-medium" : ""}>
+              <Label
+                htmlFor="billing-toggle"
+                className={billingCycle === "annual" ? "font-medium" : ""}
+              >
                 Annual
               </Label>
               <span className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100 text-xs px-2 py-0.5 rounded-full">
@@ -106,12 +140,20 @@ export default function PricingPage() {
                   <Card className="h-full flex flex-col">
                     <CardHeader>
                       <CardTitle>Starter</CardTitle>
-                      <CardDescription>For small businesses just getting started</CardDescription>
+                      <CardDescription>
+                        For small businesses just getting started
+                      </CardDescription>
                       <div className="mt-4">
-                        <span className="text-4xl font-bold">${billingCycle === "monthly" ? "99" : "79"}</span>
-                        <span className="text-muted-foreground ml-1">/ month</span>
+                        <span className="text-4xl font-bold">
+                          ${billingCycle === "monthly" ? "99" : "79"}
+                        </span>
+                        <span className="text-muted-foreground ml-1">
+                          / month
+                        </span>
                         {billingCycle === "annual" && (
-                          <p className="text-sm text-muted-foreground mt-1">Billed annually (${79 * 12})</p>
+                          <p className="text-sm text-muted-foreground mt-1">
+                            Billed annually (${79 * 12})
+                          </p>
                         )}
                       </div>
                     </CardHeader>
@@ -144,7 +186,12 @@ export default function PricingPage() {
                       </ul>
                     </CardContent>
                     <CardFooter>
-                      <Button className="w-full" onClick={() => (window.location.href = "/employer/dashboard")}>
+                      <Button
+                        className="w-full"
+                        onClick={() =>
+                          (window.location.href = "/employer/dashboard")
+                        }
+                      >
                         Get Started
                       </Button>
                     </CardFooter>
@@ -158,12 +205,20 @@ export default function PricingPage() {
                         Most Popular
                       </div>
                       <CardTitle>Professional</CardTitle>
-                      <CardDescription>For growing companies with active hiring needs</CardDescription>
+                      <CardDescription>
+                        For growing companies with active hiring needs
+                      </CardDescription>
                       <div className="mt-4">
-                        <span className="text-4xl font-bold">${billingCycle === "monthly" ? "299" : "239"}</span>
-                        <span className="text-muted-foreground ml-1">/ month</span>
+                        <span className="text-4xl font-bold">
+                          ${billingCycle === "monthly" ? "299" : "239"}
+                        </span>
+                        <span className="text-muted-foreground ml-1">
+                          / month
+                        </span>
                         {billingCycle === "annual" && (
-                          <p className="text-sm text-muted-foreground mt-1">Billed annually (${239 * 12})</p>
+                          <p className="text-sm text-muted-foreground mt-1">
+                            Billed annually (${239 * 12})
+                          </p>
                         )}
                       </div>
                     </CardHeader>
@@ -192,11 +247,15 @@ export default function PricingPage() {
                             <TooltipProvider>
                               <Tooltip>
                                 <TooltipTrigger>
-                                  <HelpCircle size={14} className="text-muted-foreground" />
+                                  <HelpCircle
+                                    size={14}
+                                    className="text-muted-foreground"
+                                  />
                                 </TooltipTrigger>
                                 <TooltipContent>
                                   <p className="max-w-xs">
-                                    Earn rebates for providing constructive feedback to candidates, up to $180 per
+                                    Earn rebates for providing constructive
+                                    feedback to candidates, up to $180 per
                                     month.
                                   </p>
                                 </TooltipContent>
@@ -211,7 +270,12 @@ export default function PricingPage() {
                       </ul>
                     </CardContent>
                     <CardFooter>
-                      <Button className="w-full" onClick={() => (window.location.href = "/employer/dashboard")}>
+                      <Button
+                        className="w-full"
+                        onClick={() =>
+                          (window.location.href = "/employer/dashboard")
+                        }
+                      >
                         Get Started
                       </Button>
                     </CardFooter>
@@ -222,12 +286,20 @@ export default function PricingPage() {
                   <Card className="h-full flex flex-col">
                     <CardHeader>
                       <CardTitle>Enterprise</CardTitle>
-                      <CardDescription>For large organizations with complex hiring needs</CardDescription>
+                      <CardDescription>
+                        For large organizations with complex hiring needs
+                      </CardDescription>
                       <div className="mt-4">
-                        <span className="text-4xl font-bold">${billingCycle === "monthly" ? "599" : "479"}</span>
-                        <span className="text-muted-foreground ml-1">/ month</span>
+                        <span className="text-4xl font-bold">
+                          ${billingCycle === "monthly" ? "599" : "479"}
+                        </span>
+                        <span className="text-muted-foreground ml-1">
+                          / month
+                        </span>
                         {billingCycle === "annual" && (
-                          <p className="text-sm text-muted-foreground mt-1">Billed annually (${479 * 12})</p>
+                          <p className="text-sm text-muted-foreground mt-1">
+                            Billed annually (${479 * 12})
+                          </p>
                         )}
                       </div>
                     </CardHeader>
@@ -243,7 +315,10 @@ export default function PricingPage() {
                         </li>
                         <li className="flex items-start gap-2">
                           <Check className="h-5 w-5 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" />
-                          <span>Full communication suite (messaging, video, scheduling)</span>
+                          <span>
+                            Full communication suite (messaging, video,
+                            scheduling)
+                          </span>
                         </li>
                         <li className="flex items-start gap-2">
                           <Check className="h-5 w-5 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" />
@@ -255,7 +330,9 @@ export default function PricingPage() {
                         </li>
                         <li className="flex items-start gap-2">
                           <Check className="h-5 w-5 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" />
-                          <span>AI-powered candidate matching and insights</span>
+                          <span>
+                            AI-powered candidate matching and insights
+                          </span>
                         </li>
                         <li className="flex items-start gap-2">
                           <Check className="h-5 w-5 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" />
@@ -282,10 +359,14 @@ export default function PricingPage() {
                   <Card className="h-full flex flex-col">
                     <CardHeader>
                       <CardTitle>Free</CardTitle>
-                      <CardDescription>Basic job search and application tools</CardDescription>
+                      <CardDescription>
+                        Basic job search and application tools
+                      </CardDescription>
                       <div className="mt-4">
                         <span className="text-4xl font-bold">$0</span>
-                        <span className="text-muted-foreground ml-1">/ forever</span>
+                        <span className="text-muted-foreground ml-1">
+                          / forever
+                        </span>
                       </div>
                     </CardHeader>
                     <CardContent className="flex-grow">
@@ -317,7 +398,12 @@ export default function PricingPage() {
                       </ul>
                     </CardContent>
                     <CardFooter>
-                      <Button className="w-full" onClick={() => (window.location.href = "/candidate/dashboard")}>
+                      <Button
+                        className="w-full"
+                        onClick={() =>
+                          (window.location.href = "/candidate/dashboard")
+                        }
+                      >
                         Sign Up Free
                       </Button>
                     </CardFooter>
@@ -331,12 +417,20 @@ export default function PricingPage() {
                         Most Popular
                       </div>
                       <CardTitle>Premium</CardTitle>
-                      <CardDescription>Enhanced tools for serious job seekers</CardDescription>
+                      <CardDescription>
+                        Enhanced tools for serious job seekers
+                      </CardDescription>
                       <div className="mt-4">
-                        <span className="text-4xl font-bold">${billingCycle === "monthly" ? "19.99" : "15.99"}</span>
-                        <span className="text-muted-foreground ml-1">/ month</span>
+                        <span className="text-4xl font-bold">
+                          ${billingCycle === "monthly" ? "19.99" : "15.99"}
+                        </span>
+                        <span className="text-muted-foreground ml-1">
+                          / month
+                        </span>
                         {billingCycle === "annual" && (
-                          <p className="text-sm text-muted-foreground mt-1">Billed annually (${15.99 * 12})</p>
+                          <p className="text-sm text-muted-foreground mt-1">
+                            Billed annually (${15.99 * 12})
+                          </p>
                         )}
                       </div>
                     </CardHeader>
@@ -348,7 +442,9 @@ export default function PricingPage() {
                         </li>
                         <li className="flex items-start gap-2">
                           <Check className="h-5 w-5 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" />
-                          <span>AI-powered CV analysis and improvement suggestions</span>
+                          <span>
+                            AI-powered CV analysis and improvement suggestions
+                          </span>
                         </li>
                         <li className="flex items-start gap-2">
                           <Check className="h-5 w-5 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" />
@@ -356,7 +452,9 @@ export default function PricingPage() {
                         </li>
                         <li className="flex items-start gap-2">
                           <Check className="h-5 w-5 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" />
-                          <span>Advanced communication tools (video calls)</span>
+                          <span>
+                            Advanced communication tools (video calls)
+                          </span>
                         </li>
                         <li className="flex items-start gap-2">
                           <Check className="h-5 w-5 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" />
@@ -369,7 +467,12 @@ export default function PricingPage() {
                       </ul>
                     </CardContent>
                     <CardFooter>
-                      <Button className="w-full" onClick={() => (window.location.href = "/candidate/dashboard")}>
+                      <Button
+                        className="w-full"
+                        onClick={() =>
+                          (window.location.href = "/candidate/dashboard")
+                        }
+                      >
                         Get Premium
                       </Button>
                     </CardFooter>
@@ -380,12 +483,20 @@ export default function PricingPage() {
                   <Card className="h-full flex flex-col">
                     <CardHeader>
                       <CardTitle>Career Pro</CardTitle>
-                      <CardDescription>Complete career advancement toolkit</CardDescription>
+                      <CardDescription>
+                        Complete career advancement toolkit
+                      </CardDescription>
                       <div className="mt-4">
-                        <span className="text-4xl font-bold">${billingCycle === "monthly" ? "39.99" : "31.99"}</span>
-                        <span className="text-muted-foreground ml-1">/ month</span>
+                        <span className="text-4xl font-bold">
+                          ${billingCycle === "monthly" ? "39.99" : "31.99"}
+                        </span>
+                        <span className="text-muted-foreground ml-1">
+                          / month
+                        </span>
                         {billingCycle === "annual" && (
-                          <p className="text-sm text-muted-foreground mt-1">Billed annually (${31.99 * 12})</p>
+                          <p className="text-sm text-muted-foreground mt-1">
+                            Billed annually (${31.99 * 12})
+                          </p>
                         )}
                       </div>
                     </CardHeader>
@@ -418,7 +529,12 @@ export default function PricingPage() {
                       </ul>
                     </CardContent>
                     <CardFooter>
-                      <Button className="w-full" onClick={() => (window.location.href = "/candidate/dashboard")}>
+                      <Button
+                        className="w-full"
+                        onClick={() =>
+                          (window.location.href = "/candidate/dashboard")
+                        }
+                      >
                         Get Career Pro
                       </Button>
                     </CardFooter>
@@ -435,42 +551,60 @@ export default function PricingPage() {
           animate="visible"
           variants={fadeIn}
         >
-          <h2 className="text-3xl font-bold mb-6">Frequently Asked Questions</h2>
+          <h2 className="text-3xl font-bold mb-6">
+            Frequently Asked Questions
+          </h2>
           <div className="space-y-6 text-left">
             <div>
-              <h3 className="text-xl font-medium mb-2">Can I change plans later?</h3>
+              <h3 className="text-xl font-medium mb-2">
+                Can I change plans later?
+              </h3>
               <p className="text-muted-foreground">
-                Yes, you can upgrade, downgrade, or cancel your plan at any time. Changes to your subscription will take
-                effect at the start of your next billing cycle.
+                Yes, you can upgrade, downgrade, or cancel your plan at any
+                time. Changes to your subscription will take effect at the start
+                of your next billing cycle.
               </p>
             </div>
             <div>
-              <h3 className="text-xl font-medium mb-2">How do feedback rebates work?</h3>
+              <h3 className="text-xl font-medium mb-2">
+                How do feedback rebates work?
+              </h3>
               <p className="text-muted-foreground">
-                Employers on the Professional and Enterprise plans can earn rebates for providing constructive feedback
-                to candidates. The more detailed and helpful your feedback, the higher the rebate, up to $180 per month
-                on the Professional plan and unlimited on the Enterprise plan.
+                Employers on the Professional and Enterprise plans can earn
+                rebates for providing constructive feedback to candidates. The
+                more detailed and helpful your feedback, the higher the rebate,
+                up to $180 per month on the Professional plan and unlimited on
+                the Enterprise plan.
               </p>
             </div>
             <div>
-              <h3 className="text-xl font-medium mb-2">Is there a free trial available?</h3>
+              <h3 className="text-xl font-medium mb-2">
+                Is there a free trial available?
+              </h3>
               <p className="text-muted-foreground">
-                Yes, we offer a 14-day free trial for all employer plans. Candidate plans start with a free tier that
-                you can use indefinitely.
+                Yes, we offer a 14-day free trial for all employer plans.
+                Candidate plans start with a free tier that you can use
+                indefinitely.
               </p>
             </div>
             <div>
-              <h3 className="text-xl font-medium mb-2">What payment methods do you accept?</h3>
+              <h3 className="text-xl font-medium mb-2">
+                What payment methods do you accept?
+              </h3>
               <p className="text-muted-foreground">
-                We accept all major credit cards, PayPal, and bank transfers for annual plans. Enterprise customers can
-                also arrange for invoicing.
+                We accept all major credit cards, PayPal, and bank transfers for
+                annual plans. Enterprise customers can also arrange for
+                invoicing.
               </p>
             </div>
             <div>
-              <h3 className="text-xl font-medium mb-2">Do you offer discounts for startups or non-profits?</h3>
+              <h3 className="text-xl font-medium mb-2">
+                Do you offer discounts for startups or non-profits?
+              </h3>
               <p className="text-muted-foreground">
-                Yes, we offer special pricing for startups, non-profits, and educational institutions. Please contact
-                our sales team for more information.
+                Yes, we offer special pricing for startups, non-profits, and
+                educational institutions. Please contact our sales team for more
+                information.
               </p>
             </div>
           </div>
@@ -482,12 +616,19 @@ export default function PricingPage() {
           animate="visible"
           variants={fadeIn}
         >
-          <h2 className="text-3xl font-bold mb-4">Ready to transform your hiring process?</h2>
+          <h2 className="text-3xl font-bold mb-4">
+            Ready to transform your hiring process?
+          </h2>
           <p className="text-xl text-muted-foreground mb-8">
-            Join thousands of companies finding the perfect candidates with TalentConnect.
+            Join thousands of companies finding the perfect candidates with
+            CVue.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" className="gap-2" onClick={() => (window.location.href = "/candidate/dashboard")}>
+            <Button
+              size="lg"
+              className="gap-2"
+              onClick={() => (window.location.href = "/candidate/dashboard")}
+            >
               Get Started for Free
             </Button>
             <Button size="lg" variant="outline" className="gap-2">
@@ -501,7 +642,7 @@ export default function PricingPage() {
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             <div>
-              <h3 className="font-semibold mb-4">TalentConnect</h3>
+              <h3 className="font-semibold mb-4">CVue</h3>
               <ul className="space-y-2 text-sm text-foreground/70">
                 <li>
                   <Link href="/about">About Us</Link>
@@ -558,11 +699,10 @@ export default function PricingPage() {
             </div>
           </div>
           <div className="mt-12 pt-6 border-t border-border text-center text-sm text-foreground/60">
-            <p>© {new Date().getFullYear()} TalentConnect. All rights reserved.</p>
+            <p>© {new Date().getFullYear()} CVue. All rights reserved.</p>
           </div>
         </div>
       </footer>
     </div>
-  )
+  );
 }
-
