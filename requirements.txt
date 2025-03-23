@@ -13,3 +13,4 @@ setuptools==75.8.0
 Werkzeug==3.1.3
 wheel==0.45.1
 flask_cors
+PyPDF2
