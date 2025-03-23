@@ -95,12 +95,17 @@ export default function CandidateNavbar() {
                       alt="User"
                     />
                     <AvatarFallback>
+<<<<<<< HEAD
                       {userInfo ? `${userInfo.firstName[0]}${userInfo.lastName[0]}` : 'U'}
+=======
+                      {user ? `${user.first_name[0]}${user.last_name[0]}` : "U"}
+>>>>>>> 3ffd0ffd4fef1b2abb811b7a93b9d5286b593e94
                     </AvatarFallback>
                   </Avatar>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
+<<<<<<< HEAD
                 <DropdownMenuLabel>{userInfo ? `${userInfo.firstName} ${userInfo.lastName}` : 'My Account'}</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem className="cursor-pointer">
@@ -119,6 +124,11 @@ export default function CandidateNavbar() {
                   <Settings className="mr-2 h-4 w-4" />
                   <span>Settings</span>
                 </DropdownMenuItem>
+=======
+                <DropdownMenuLabel>
+                  {user ? `${user.first_name} ${user.last_name}` : "My Account"}
+                </DropdownMenuLabel>
+>>>>>>> 3ffd0ffd4fef1b2abb811b7a93b9d5286b593e94
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
                   className="cursor-pointer"
