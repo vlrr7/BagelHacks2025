@@ -48,12 +48,6 @@ export default function HomePage() {
           >
             Pricing
           </Link>
-          <Link
-            href="/about"
-            className="text-foreground/80 hover:text-foreground transition-colors"
-          >
-            About
-          </Link>
         </nav>
         <div className="flex gap-4">
           <Link href="/login">
@@ -186,15 +180,6 @@ export default function HomePage() {
                       <p className="text-foreground/80">
                         Chat and video calls directly on the platform. The
                         applicants are always a click away
-                      </p>
-                    </div>
-                  </li>
-                  <li className="flex gap-3">
-                    <TrendingUp className="h-6 w-6 text-primary flex-shrink-0" />
-                    <div>
-                      <h3 className="font-semibold">Trend Analysis</h3>
-                      <p className="text-foreground/80">
-                        See what skills and qualifications are in demand
                       </p>
                     </div>
                   </li>

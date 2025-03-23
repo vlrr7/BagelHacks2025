@@ -25,7 +25,7 @@ import {
 
 export default function PricingPage() {
   const [billingCycle, setBillingCycle] = useState<"monthly" | "annual">(
-    "monthly",
+    "monthly"
   );
 
   const fadeIn = {
@@ -53,19 +53,7 @@ export default function PricingPage() {
         </div>
         <nav className="hidden md:flex gap-6">
           <Link
-            href="/features"
-            className="text-foreground/80 hover:text-foreground transition-colors"
-          >
-            Features
-          </Link>
-          <Link
-            href="/pricing"
-            className="text-foreground/80 hover:text-foreground transition-colors"
-          >
-            Pricing
-          </Link>
-          <Link
-            href="/about"
+            href="/"
             className="text-foreground/80 hover:text-foreground transition-colors"
           >
             About
@@ -387,12 +375,12 @@ export default function PricingPage() {
                           <Check className="h-5 w-5 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" />
                           <span>Basic messaging with employers</span>
                         </li>
-                        <li className="flex items-start gap-2 text-muted-foreground">
-                          <Check className="h-5 w-5 flex-shrink-0 mt-0.5" />
+                        <li className="flex items-start gap-2">
+                          <Check className="h-5 w-5 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" />
                           <span>AI CV analysis</span>
                         </li>
-                        <li className="flex items-start gap-2 text-muted-foreground">
-                          <Check className="h-5 w-5 flex-shrink-0 mt-0.5" />
+                        <li className="flex items-start gap-2">
+                          <Check className="h-5 w-5 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" />
                           <span>Priority in search results</span>
                         </li>
                       </ul>
@@ -405,137 +393,6 @@ export default function PricingPage() {
                         }
                       >
                         Sign Up Free
-                      </Button>
-                    </CardFooter>
-                  </Card>
-                </motion.div>
-
-                <motion.div variants={fadeIn}>
-                  <Card className="h-full flex flex-col border-primary">
-                    <CardHeader>
-                      <div className="bg-primary text-primary-foreground text-xs px-3 py-1 rounded-full w-fit mb-2">
-                        Most Popular
-                      </div>
-                      <CardTitle>Premium</CardTitle>
-                      <CardDescription>
-                        Enhanced tools for serious job seekers
-                      </CardDescription>
-                      <div className="mt-4">
-                        <span className="text-4xl font-bold">
-                          ${billingCycle === "monthly" ? "19.99" : "15.99"}
-                        </span>
-                        <span className="text-muted-foreground ml-1">
-                          / month
-                        </span>
-                        {billingCycle === "annual" && (
-                          <p className="text-sm text-muted-foreground mt-1">
-                            Billed annually (${15.99 * 12})
-                          </p>
-                        )}
-                      </div>
-                    </CardHeader>
-                    <CardContent className="flex-grow">
-                      <ul className="space-y-3">
-                        <li className="flex items-start gap-2">
-                          <Check className="h-5 w-5 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" />
-                          <span>All Free features</span>
-                        </li>
-                        <li className="flex items-start gap-2">
-                          <Check className="h-5 w-5 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" />
-                          <span>
-                            AI-powered CV analysis and improvement suggestions
-                          </span>
-                        </li>
-                        <li className="flex items-start gap-2">
-                          <Check className="h-5 w-5 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" />
-                          <span>Priority in employer search results</span>
-                        </li>
-                        <li className="flex items-start gap-2">
-                          <Check className="h-5 w-5 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" />
-                          <span>
-                            Advanced communication tools (video calls)
-                          </span>
-                        </li>
-                        <li className="flex items-start gap-2">
-                          <Check className="h-5 w-5 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" />
-                          <span>Job application tracking</span>
-                        </li>
-                        <li className="flex items-start gap-2 text-muted-foreground">
-                          <Check className="h-5 w-5 flex-shrink-0 mt-0.5" />
-                          <span>Career coaching sessions</span>
-                        </li>
-                      </ul>
-                    </CardContent>
-                    <CardFooter>
-                      <Button
-                        className="w-full"
-                        onClick={() =>
-                          (window.location.href = "/candidate/dashboard")
-                        }
-                      >
-                        Get Premium
-                      </Button>
-                    </CardFooter>
-                  </Card>
-                </motion.div>
-
-                <motion.div variants={fadeIn}>
-                  <Card className="h-full flex flex-col">
-                    <CardHeader>
-                      <CardTitle>Career Pro</CardTitle>
-                      <CardDescription>
-                        Complete career advancement toolkit
-                      </CardDescription>
-                      <div className="mt-4">
-                        <span className="text-4xl font-bold">
-                          ${billingCycle === "monthly" ? "39.99" : "31.99"}
-                        </span>
-                        <span className="text-muted-foreground ml-1">
-                          / month
-                        </span>
-                        {billingCycle === "annual" && (
-                          <p className="text-sm text-muted-foreground mt-1">
-                            Billed annually (${31.99 * 12})
-                          </p>
-                        )}
-                      </div>
-                    </CardHeader>
-                    <CardContent className="flex-grow">
-                      <ul className="space-y-3">
-                        <li className="flex items-start gap-2">
-                          <Check className="h-5 w-5 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" />
-                          <span>All Premium features</span>
-                        </li>
-                        <li className="flex items-start gap-2">
-                          <Check className="h-5 w-5 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" />
-                          <span>Monthly 1-on-1 career coaching sessions</span>
-                        </li>
-                        <li className="flex items-start gap-2">
-                          <Check className="h-5 w-5 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" />
-                          <span>Interview preparation and mock interviews</span>
-                        </li>
-                        <li className="flex items-start gap-2">
-                          <Check className="h-5 w-5 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" />
-                          <span>Salary negotiation guidance</span>
-                        </li>
-                        <li className="flex items-start gap-2">
-                          <Check className="h-5 w-5 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" />
-                          <span>Personalized career development plan</span>
-                        </li>
-                        <li className="flex items-start gap-2">
-                          <Check className="h-5 w-5 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" />
-                          <span>Direct introductions to hiring managers</span>
-                        </li>
-                      </ul>
-                    </CardContent>
-                    <CardFooter>
-                      <Button
-                        className="w-full"
-                        onClick={() =>
-                          (window.location.href = "/candidate/dashboard")
-                        }
-                      >
-                        Get Career Pro
                       </Button>
                     </CardFooter>
                   </Card>
@@ -607,33 +464,6 @@ export default function PricingPage() {
                 information.
               </p>
             </div>
-          </div>
-        </motion.section>
-
-        <motion.section
-          className="max-w-3xl mx-auto text-center py-16 border-t border-border"
-          initial="hidden"
-          animate="visible"
-          variants={fadeIn}
-        >
-          <h2 className="text-3xl font-bold mb-4">
-            Ready to transform your hiring process?
-          </h2>
-          <p className="text-xl text-muted-foreground mb-8">
-            Join thousands of companies finding the perfect candidates with
-            CVue.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button
-              size="lg"
-              className="gap-2"
-              onClick={() => (window.location.href = "/candidate/dashboard")}
-            >
-              Get Started for Free
-            </Button>
-            <Button size="lg" variant="outline" className="gap-2">
-              Contact Sales
-            </Button>
           </div>
         </motion.section>
       </main>
