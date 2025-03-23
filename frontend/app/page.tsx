@@ -188,10 +188,10 @@ export default function HomePage() {
                   height="315"
                   src="https://www.youtube.com/embed/12p9V0hn6Ng?si=F7mRYpXcDFwj34qF"
                   title="YouTube video player"
-                  frameborder="0"
+                  frameBorder="0"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                  referrerpolicy="strict-origin-when-cross-origin"
-                  allowfullscreen
+                  referrerPolicy="strict-origin-when-cross-origin"
+                  allowFullScreen
                 ></iframe>
               </div>
             </div>
