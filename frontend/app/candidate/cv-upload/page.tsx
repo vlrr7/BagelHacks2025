@@ -1,69 +1,105 @@
-"use client"
+"use client";
 
-import type React from "react"
-
-import { useState } from "react"
-import { motion } from "framer-motion"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Upload, FileText, CheckCircle, AlertCircle, Info, Search, TrendingUp } from "lucide-react"
-import CandidateNavbar from "@/components/candidate-navbar"
+import type React from "react";
+import { useState } from "react";
+import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Upload,
+  FileText,
+  CheckCircle,
+  AlertCircle,
+  Info,
+  Search,
+  TrendingUp,
+} from "lucide-react";
+import CandidateNavbar from "@/components/candidate-navbar";
 
 export default function CVUploadPage() {
-  const [uploadState, setUploadState] = useState<"idle" | "uploading" | "success" | "error">("idle")
-  const [dragActive, setDragActive] = useState(false)
+  const [uploadState, setUploadState] = useState<
+    "idle" | "uploading" | "success" | "error"
+  >("idle");
+  const [dragActive, setDragActive] = useState(false);
 
   const handleDrag = (e: React.DragEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
+    e.preventDefault();
+    e.stopPropagation();
     if (e.type === "dragenter" || e.type === "dragover") {
-      setDragActive(true)
+      setDragActive(true);
     } else if (e.type === "dragleave") {
-      setDragActive(false)
+      setDragActive(false);
     }
-  }
+  };
 
   const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-    setDragActive(false)
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
 
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      handleFile(e.dataTransfer.files[0])
+      handleFile(e.dataTransfer.files[0]);
     }
-  }
+  };
 
   const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      handleFile(e.target.files[0])
+      handleFile(e.target.files[0]);
     }
-  }
+  };
 
   const handleFile = (file: File) => {
-    // Simulate file upload
-    setUploadState("uploading")
+    const formData = new FormData();
+    formData.append("cv", file);
 
-    setTimeout(() => {
-      setUploadState("success")
-    }, 2000)
-  }
+    setUploadState("uploading");
+
+    fetch("/cv-upload", {
+      method: "POST",
+      body: formData,
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.message === "CV uploaded successfully") {
+          setUploadState("success");
+        } else {
+          setUploadState("error");
+        }
+      })
+      .catch(() => {
+        setUploadState("error");
+      });
+  };
 
   const fadeIn = {
     hidden: { opacity: 0, y: 10 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
-  }
+  };
 
   return (
     <div className="min-h-screen bg-background">
       <CandidateNavbar />
 
       <main className="container mx-auto px-4 py-8">
-        <motion.div initial="hidden" animate="visible" variants={fadeIn} className="max-w-4xl mx-auto">
+        <motion.div
+          initial="hidden"
+          animate="visible"
+          variants={fadeIn}
+          className="max-w-4xl mx-auto"
+        >
           <h1 className="text-3xl font-bold mb-2">Upload Your CV</h1>
-          <p className="text-muted-foreground mb-8">Upload your CV to apply for jobs and get discovered by employers</p>
+          <p className="text-muted-foreground mb-8">
+            Upload your CV to apply for jobs and get discovered by employers
+          </p>
 
           <Tabs defaultValue="upload">
             <TabsList className="mb-6">
@@ -76,12 +112,17 @@ export default function CVUploadPage() {
               <Card>
                 <CardHeader>
                   <CardTitle>Upload Your CV</CardTitle>
-                  <CardDescription>Upload your CV in PDF, DOCX, or RTF format. Maximum file size: 5MB.</CardDescription>
+                  <CardDescription>
+                    Upload your CV in PDF, DOCX, or RTF format. Maximum file
+                    size: 5MB.
+                  </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div
                     className={`border-2 border-dashed rounded-lg p-8 text-center ${
-                      dragActive ? "border-primary bg-primary/5" : "border-border"
+                      dragActive
+                        ? "border-primary bg-primary/5"
+                        : "border-border"
                     } transition-colors`}
                     onDragEnter={handleDrag}
                     onDragLeave={handleDrag}
@@ -93,8 +134,12 @@ export default function CVUploadPage() {
                         <div className="mx-auto w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
                           <Upload className="h-6 w-6 text-primary" />
                         </div>
-                        <h3 className="text-lg font-medium mb-2">Drag and drop your CV here</h3>
-                        <p className="text-muted-foreground mb-4">or click to browse files</p>
+                        <h3 className="text-lg font-medium mb-2">
+                          Drag and drop your CV here
+                        </h3>
+                        <p className="text-muted-foreground mb-4">
+                          or click to browse files
+                        </p>
                         <Input
                           type="file"
                           id="cv-upload"
@@ -113,8 +158,12 @@ export default function CVUploadPage() {
                         <div className="mx-auto w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
                           <div className="animate-spin h-6 w-6 border-2 border-primary border-t-transparent rounded-full" />
                         </div>
-                        <h3 className="text-lg font-medium">Uploading your CV...</h3>
-                        <p className="text-muted-foreground">This will just take a moment</p>
+                        <h3 className="text-lg font-medium">
+                          Uploading your CV...
+                        </h3>
+                        <p className="text-muted-foreground">
+                          This will just take a moment
+                        </p>
                       </div>
                     )}
 
@@ -123,8 +172,12 @@ export default function CVUploadPage() {
                         <div className="mx-auto w-12 h-12 rounded-full bg-green-100 dark:bg-green-900 flex items-center justify-center">
                           <CheckCircle className="h-6 w-6 text-green-600 dark:text-green-400" />
                         </div>
-                        <h3 className="text-lg font-medium">Upload Successful!</h3>
-                        <p className="text-muted-foreground mb-4">Your CV has been uploaded successfully</p>
+                        <h3 className="text-lg font-medium">
+                          Upload Successful!
+                        </h3>
+                        <p className="text-muted-foreground mb-4">
+                          Your CV has been uploaded successfully
+                        </p>
                         <div className="flex justify-center gap-4">
                           <Button variant="outline">View CV</Button>
                           <Button>Continue</Button>
@@ -139,9 +192,12 @@ export default function CVUploadPage() {
                         </div>
                         <h3 className="text-lg font-medium">Upload Failed</h3>
                         <p className="text-muted-foreground mb-4">
-                          There was an error uploading your CV. Please try again.
+                          There was an error uploading your CV. Please try
+                          again.
                         </p>
-                        <Button onClick={() => setUploadState("idle")}>Try Again</Button>
+                        <Button onClick={() => setUploadState("idle")}>
+                          Try Again
+                        </Button>
                       </div>
                     )}
                   </div>
@@ -152,7 +208,9 @@ export default function CVUploadPage() {
                       <h4 className="font-medium mb-1">CV Tips</h4>
                       <ul className="text-sm text-muted-foreground space-y-1 list-disc pl-4">
                         <li>Keep your CV concise and relevant (1-2 pages)</li>
-                        <li>Highlight your achievements with quantifiable results</li>
+                        <li>
+                          Highlight your achievements with quantifiable results
+                        </li>
                         <li>Tailor your CV to the jobs you're applying for</li>
                         <li>Ensure there are no spelling or grammar errors</li>
                       </ul>
@@ -166,14 +224,19 @@ export default function CVUploadPage() {
               <Card>
                 <CardHeader>
                   <CardTitle>Create Online CV</CardTitle>
-                  <CardDescription>Build your CV step by step using our online editor</CardDescription>
+                  <CardDescription>
+                    Build your CV step by step using our online editor
+                  </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="text-center py-12">
                     <FileText className="h-12 w-12 text-primary mx-auto mb-4" />
-                    <h3 className="text-lg font-medium mb-2">Create a professional CV online</h3>
+                    <h3 className="text-lg font-medium mb-2">
+                      Create a professional CV online
+                    </h3>
                     <p className="text-muted-foreground mb-6 max-w-md mx-auto">
-                      Our step-by-step CV builder helps you create a professional CV that stands out to employers
+                      Our step-by-step CV builder helps you create a
+                      professional CV that stands out to employers
                     </p>
                     <Button>Start Building</Button>
                   </div>
@@ -185,7 +248,9 @@ export default function CVUploadPage() {
               <Card>
                 <CardHeader>
                   <CardTitle>Import from LinkedIn</CardTitle>
-                  <CardDescription>Import your professional details directly from LinkedIn</CardDescription>
+                  <CardDescription>
+                    Import your professional details directly from LinkedIn
+                  </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="text-center py-12">
@@ -207,12 +272,17 @@ export default function CVUploadPage() {
                         <circle cx="4" cy="4" r="2"></circle>
                       </svg>
                     </div>
-                    <h3 className="text-lg font-medium mb-2">Connect with LinkedIn</h3>
+                    <h3 className="text-lg font-medium mb-2">
+                      Connect with LinkedIn
+                    </h3>
                     <p className="text-muted-foreground mb-6 max-w-md mx-auto">
-                      We'll import your professional experience, skills, and education from your LinkedIn profile
+                      We'll import your professional experience, skills, and
+                      education from your LinkedIn profile
                     </p>
 
-                    <Button className="bg-blue-600 hover:bg-blue-700 text-white">Connect with LinkedIn</Button>
+                    <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+                      Connect with LinkedIn
+                    </Button>
                   </div>
                 </CardContent>
               </Card>
@@ -220,7 +290,9 @@ export default function CVUploadPage() {
           </Tabs>
 
           <div className="mt-8">
-            <h2 className="text-xl font-bold mb-4">What happens after you upload your CV?</h2>
+            <h2 className="text-xl font-bold mb-4">
+              What happens after you upload your CV?
+            </h2>
             <div className="grid md:grid-cols-3 gap-6">
               <Card>
                 <CardContent className="pt-6">
@@ -230,7 +302,8 @@ export default function CVUploadPage() {
                     </div>
                     <h3 className="font-medium mb-2">AI-Powered Analysis</h3>
                     <p className="text-sm text-muted-foreground">
-                      Our AI analyzes your CV and provides insights to help you improve it
+                      Our AI analyzes your CV and provides insights to help you
+                      improve it
                     </p>
                   </div>
                 </CardContent>
@@ -242,7 +315,9 @@ export default function CVUploadPage() {
                     <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
                       <Search className="h-5 w-5 text-primary" />
                     </div>
-                    <h3 className="font-medium mb-2">Discoverable by Employers</h3>
+                    <h3 className="font-medium mb-2">
+                      Discoverable by Employers
+                    </h3>
                     <p className="text-sm text-muted-foreground">
                       Employers can find you based on your skills and experience
                     </p>
@@ -256,9 +331,12 @@ export default function CVUploadPage() {
                     <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
                       <TrendingUp className="h-5 w-5 text-primary" />
                     </div>
-                    <h3 className="font-medium mb-2">Personalized Job Matches</h3>
+                    <h3 className="font-medium mb-2">
+                      Personalized Job Matches
+                    </h3>
                     <p className="text-sm text-muted-foreground">
-                      Get matched with jobs that align with your skills and career goals
+                      Get matched with jobs that align with your skills and
+                      career goals
                     </p>
                   </div>
                 </CardContent>
@@ -268,6 +346,5 @@ export default function CVUploadPage() {
         </motion.div>
       </main>
     </div>
-  )
+  );
 }
-
