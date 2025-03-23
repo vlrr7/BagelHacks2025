@@ -67,15 +67,12 @@ export default function HomePage() {
           variants={fadeIn}
         >
           <h1 className="text-4xl md:text-6xl font-bold mb-6">
-            Get{" "}
-            <span className="underline animate-move-left-right">Valuable</span>{" "}
-            Feedback From HR Teams{" "}
-            <span className="underline animate-move-left-right">
-              Everywhere
-            </span>
+            HR teams: Buy{" "}
+            <span className="underline animate-move-left-right">Leads</span>,
+            not <span className="underline animate-move-left-right">Ads</span>!
           </h1>
           <p className="text-xl text-foreground/80 mb-10 max-w-2xl mx-auto">
-            Buy leads, not ads. And spend less time reviewing resumes.
+            And spend less time reviewing resumes.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/signup?t=candidate">
