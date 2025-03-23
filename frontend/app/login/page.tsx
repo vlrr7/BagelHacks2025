@@ -1,8 +1,6 @@
 "use client"
 
-import type React from "react"
-
-import { useState } from "react"
+import React, { useState } from "react"
 import Link from "next/link"
 import { motion } from "framer-motion"
 import { Button } from "@/components/ui/button"
@@ -22,11 +20,28 @@ export default function LoginPage() {
     e.preventDefault()
     setIsLoading(true)
 
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false)
-      window.location.href = "/candidate/dashboard" // Redirect to dashboard after login
-    }, 1500)
+    try {
+      // Call the Flask backend /login endpoint
+      const response = await fetch("http://127.0.0.1:5000/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        alert(data.error || "Login failed");
+      } else {
+        alert("Login successful!");
+        window.location.href = "/candidate/dashboard";
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      alert("An error occurred during login.");
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   const fadeIn = {
@@ -135,4 +150,3 @@ export default function LoginPage() {
     </div>
   )
 }
-
