@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { checkAuth, User } from "@/lib/auth";
+import { Modal } from "@/components/ui/modal";
 
 import {
   Card,
@@ -49,6 +50,7 @@ export default function CVUploadPage() {
   >("idle");
   const [dragActive, setDragActive] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [showCV, setShowCV] = useState(false);
 
   const deleteCV = async (): Promise<void> => {
     try {
@@ -255,7 +257,7 @@ export default function CVUploadPage() {
                           Your CV has been uploaded successfully
                         </p>
                         <div className="flex justify-center gap-4">
-                          <Button variant="outline">View CV</Button>
+                          <Button variant="outline" onClick={() => setShowCV(true)}>View CV</Button>
                           <Button onClick={deleteCV}>Delete CV</Button>  {/* Ajout du bouton de suppression */}
                         </div>
                       </div>
@@ -421,6 +423,20 @@ export default function CVUploadPage() {
           </div>
         </motion.div>
       </main>
+
+      <Modal
+        isOpen={showCV}
+        onClose={() => setShowCV(false)}
+        title="Your CV"
+      >
+        <div className="w-full h-[80vh]">
+          <iframe 
+            src="http://localhost:5000/candidate/raw-cv"
+            className="w-full h-full border-0"
+            title="CV Preview"
+          />
+        </div>
+      </Modal>
     </div>
   );
 }

@@ -1,18 +1,18 @@
-from database import init_db, debug_print_user
+from database import init_db, debug_print_user, extract_user_cvs
 import os
-from flask import Flask, request, jsonify, session
+from flask import Flask, request, jsonify, session, send_file
 from flask_cors import CORS
 from bson import Binary
 from dotenv import load_dotenv
 from flask_session import Session
 from datetime import timedelta
-
 import bcrypt
 from werkzeug.utils import secure_filename
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
-from database import extract_user_cvs
-from cohere_utils import rerank_cohere  # Updated import
+from cohere_utils import rerank_cohere
 from models import User
+from parseFile import parse_pdf_to_text  # Add this import
+import io
 
 # Load environment variables if you want to use them (e.g., SECRET_KEY)
 load_dotenv()
@@ -289,15 +289,12 @@ def search_candidates():
         if not search_query:
             return jsonify({"error": "No search query provided"}), 400
 
-        # Get all CVs from the database
         documents = extract_user_cvs(db)
         if not documents:
             return jsonify({"error": "No CVs found in the database"}), 404
 
-        # Use Cohere to rank the documents
         ranked_results = rerank_cohere(search_query, documents)
         
-        # Format results with user information
         formatted_results = []
         for result in ranked_results:
             user = db.users.find_one({"email": result["email"]})
@@ -307,6 +304,7 @@ def search_candidates():
                     "firstName": user.get("first_name"),
                     "lastName": user.get("last_name"),
                     "preview": result["text"][:200] + "...",  # First 200 characters of CV
+                    "text": result["text"],  # Include full text
                     "relevanceScore": result["relevance_score"]
                 })
 
@@ -315,6 +313,56 @@ def search_candidates():
     except Exception as e:
         print(f"Search error: {str(e)}")
         return jsonify({"error": f"Search failed: {str(e)}"}), 500
+
+@app.route("/candidate/view-cv", methods=["GET"])
+def view_cv():
+    try:
+        user_data = session.get('user')
+        if not user_data:
+            return jsonify({"error": "Not authenticated"}), 401
+
+        user_email = user_data.get('email')
+        user = db.users.find_one({"email": user_email})
+        
+        if not user or "cv_pdf" not in user:
+            return jsonify({"error": "No CV found"}), 404
+
+        # Parse PDF to text
+        cv_text = parse_pdf_to_text(user["cv_pdf"])
+        if not cv_text:
+            return jsonify({"error": "Could not extract text from CV"}), 500
+
+        return jsonify({"text": cv_text}), 200
+
+    except Exception as e:
+        print(f"Error viewing CV: {str(e)}")
+        return jsonify({"error": "Failed to view CV"}), 500
+
+@app.route("/candidate/raw-cv", methods=["GET"])
+def get_raw_cv():
+    try:
+        email = request.args.get('email')
+        if not email:
+            # If no email provided, get current user's CV
+            user_data = session.get('user')
+            if not user_data:
+                return jsonify({"error": "Not authenticated"}), 401
+            email = user_data.get('email')
+            
+        user = db.users.find_one({"email": email})
+        if not user or "cv_pdf" not in user:
+            return jsonify({"error": "No CV found"}), 404
+
+        return send_file(
+            io.BytesIO(user["cv_pdf"]),
+            mimetype='application/pdf',
+            as_attachment=False,
+            download_name='cv.pdf'
+        )
+
+    except Exception as e:
+        print(f"Error getting CV: {str(e)}")
+        return jsonify({"error": "Failed to get CV"}), 500
 
 if __name__ == "__main__":
     app.run(debug=True)
