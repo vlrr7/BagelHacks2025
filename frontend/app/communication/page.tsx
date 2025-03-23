@@ -355,9 +355,6 @@ export default function CommunicationPage() {
                                 onChange={(e) => setMessage(e.target.value)}
                                 className="flex-grow"
                               />
-                              <Button variant="ghost" size="icon">
-                                <Mic size={20} />
-                              </Button>
                               <Button
                                 size="icon"
                                 onClick={handleSendMessage}
