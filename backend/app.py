@@ -14,6 +14,7 @@ load_dotenv()
 
 app = Flask(__name__)
 app.config["MONGODB_URI"] = os.getenv("MONGODB_URI", "fallback-secret-key")
+app.config["SECRET_KEY"] = os.getenv("SECRET_KEY", "fallback-secret-key")
 
 # Import the `db` object from database.py
 from database import init_db
@@ -114,7 +115,7 @@ def login():
         return jsonify({"error": "Invalid credentials"}), 401
 
 
-@app.route("/cv-upload", methods=["POST"])
+@app.route("/candidate/cv-upload-api", methods=["POST"])
 def add_cv():
     """
     Add a CV to the user's profile.
