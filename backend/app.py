@@ -1,10 +1,11 @@
-# backend/app.py
-
 import os
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from dotenv import load_dotenv
 import bcrypt
+from werkzeug.utils import secure_filename
+from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
+
 
 # Import the `db` object from database.py
 from database import db
@@ -14,6 +15,25 @@ load_dotenv()
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = os.getenv("SECRET_KEY", "fallback-secret-key")
+
+# Initialize the login manager
+login_manager = LoginManager()
+login_manager.init_app(app)
+
+# User model
+class User(UserMixin):
+    def __init__(self, user_data):
+        self.id = user_data['email']
+        self.email = user_data['email']
+        self.password = user_data['password']
+        
+# User loader callback
+@login_manager.user_loader
+def load_user(user_id):
+    user_data = db.users.find_one({"email": user_id})
+    if user_data:
+        return User(user_data)
+    return None
 
 # Allow CORS requests (from your frontend on port 3000, for instance)
 CORS(app, resources={r"/*": {"origins": "*"}})
@@ -87,6 +107,32 @@ def login():
     else:
         return jsonify({"error": "Invalid credentials"}), 401
 
+
+@app.route("/cv-upload", methods=["POST"])
+def add_cv():
+    """
+    Add a CV to the user's profile.
+    Body: {"cv": "<file>" }
+    """
+    cv_file = request.files.get("cv")
+
+    if not cv_file:
+        return jsonify({"error": "Missing cv"}), 400
+
+    # Secure the filename
+    filename = secure_filename(cv_file.filename)
+    filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+
+    # Save the file
+    cv_file.save(filepath)
+
+    # Update the user's profile with the CV filepath
+    db.users.update_one(
+        {"email": current_user.email},
+        {"$set": {"cv_path": filepath}}
+    )
+
+    return jsonify({"message": "CV uploaded successfully"}), 200
 
 if __name__ == "__main__":
     app.run(debug=True)
