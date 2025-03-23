@@ -7,14 +7,17 @@ from werkzeug.utils import secure_filename
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 
 
-# Import the `db` object from database.py
-from database import db
-
 # Load environment variables if you want to use them (e.g., SECRET_KEY)
 load_dotenv()
 
 app = Flask(__name__)
-app.config["SECRET_KEY"] = os.getenv("SECRET_KEY", "fallback-secret-key")
+app.config["MONGO_MONGODB_URI"] = os.getenv("MONGODB_URI", "fallback-secret-key")
+
+# Import the `db` object from database.py
+from database import init_db
+with app.app_context():
+    db = init_db()
+
 
 # Initialize the login manager
 login_manager = LoginManager()
@@ -101,8 +104,8 @@ def login():
         return jsonify({"error": "User not found"}), 404
 
     # Check the hashed password
-    if bcrypt.hashpw(password.encode("utf-8"), user["password"]) == user["password"]:
-        # Password matches
+    if bcrypt.checkpw(password.encode("utf-8"), user["password"]):
+    # Password matches
         return jsonify({"message": "Login successful"}), 200
     else:
         return jsonify({"error": "Invalid credentials"}), 401

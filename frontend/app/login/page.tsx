@@ -29,12 +29,31 @@ export default function LoginPage() {
     e.preventDefault();
     setIsLoading(true);
 
-    // Simulate API call
-    setTimeout(() => {
+
+    try {
+      // Call the Flask backend /login endpoint
+      const response = await fetch("http://127.0.0.1:5000/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        alert(data.error || "Login failed");
+      } else {
+        alert("Login successful!");
+        window.location.href = "/candidate/dashboard";
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      alert("An error occurred during login.");
+    } finally {
       setIsLoading(false);
-      window.location.href = "/candidate/dashboard"; // Redirect to dashboard after login
-    }, 1500);
-  };
+    }
+  }
+
 
   const fadeIn = {
     hidden: { opacity: 0, y: 20 },
