@@ -4,6 +4,7 @@ import { useState } from "react"
 import { motion } from "framer-motion"
 import EmployerNavbar from "@/components/employer-navbar"
 import { Card, CardContent } from "@/components/ui/card"
+import { Modal } from "@/components/ui/modal"
 
 interface SearchResult {
   firstName: string;
@@ -11,6 +12,7 @@ interface SearchResult {
   email: string;
   preview: string;
   relevanceScore: number;
+  text: string; // Add full text field
 }
 
 export default function SearchCandidatesPage() {
@@ -18,6 +20,7 @@ export default function SearchCandidatesPage() {
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [selectedCV, setSelectedCV] = useState<SearchResult | null>(null);
 
   const fadeIn = {
     hidden: { opacity: 0, y: 10 },
@@ -88,7 +91,11 @@ export default function SearchCandidatesPage() {
 
             <div className="space-y-4">
               {searchResults.map((result, index) => (
-                <Card key={index} className="bg-muted/50">
+                <Card 
+                  key={index} 
+                  className="bg-muted/50 cursor-pointer hover:bg-muted/70 transition-colors"
+                  onClick={() => setSelectedCV(result)}
+                >
                   <CardContent className="p-6">
                     <h3 className="text-xl font-semibold mb-2">
                       {result.firstName} {result.lastName}
@@ -112,6 +119,21 @@ export default function SearchCandidatesPage() {
           </div>
         </motion.div>
       </main>
+
+      <Modal
+        isOpen={!!selectedCV}
+        onClose={() => setSelectedCV(null)}
+        title={selectedCV ? `${selectedCV.firstName} ${selectedCV.lastName}'s CV` : ''}
+      >
+        <div className="w-full h-[95vh]">
+          <iframe 
+            key={selectedCV?.email} // Add key to force iframe refresh
+            src={selectedCV ? `http://localhost:5000/candidate/raw-cv?email=${encodeURIComponent(selectedCV.email)}` : ''}
+            className="w-full h-full border-0"
+            title="CV Preview"
+          />
+        </div>
+      </Modal>
     </div>
   );
 }
