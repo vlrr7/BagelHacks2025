@@ -2,7 +2,7 @@
 
 import type React from "react";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -30,6 +30,19 @@ export default function SignupPage() {
   const [accountType, setAccountType] = useState("candidate");
   const [isLoading, setIsLoading] = useState(false);
   const [agreeToTerms, setAgreeToTerms] = useState(false);
+
+  function selectOption() {
+    let params = new URLSearchParams(document.location.search);
+    if (params.get("t") == "candidate") {
+      setAccountType("candidate");
+    } else if (params.get("t") == "employer") {
+      setAccountType("employer");
+    }
+  }
+
+  useEffect(() => {
+    selectOption();
+  });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

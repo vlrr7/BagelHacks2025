@@ -84,12 +84,12 @@ export default function HomePage() {
             Buy leads, not ads. And spend less time reviewing resumes.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/candidate/dashboard">
+            <Link href="/signup?t=candidate">
               <Button size="lg" className="gap-2">
                 I'm Looking for a Job <ArrowRight size={16} />
               </Button>
             </Link>
-            <Link href="/employer/dashboard">
+            <Link href="/signup?t=employer">
               <Button size="lg" variant="outline" className="gap-2">
                 I'm an Employer <ArrowRight size={16} />
               </Button>
