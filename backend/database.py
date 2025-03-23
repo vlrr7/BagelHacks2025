@@ -4,13 +4,14 @@ import os
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 from dotenv import load_dotenv
+from flask import current_app
 
 # If you prefer to keep your URI secret, create a .env file and load from there:
 # load_dotenv()
 # uri = os.getenv("MONGODB_URI")
 
 # For now, we’ll use your existing hardcoded URI:
-uri = "mongodb+srv://rebeccaabc16:11qWvQaS5eEF89uT@bagelhacks2025.3rrrv.mongodb.net/?retryWrites=true&w=majority&appName=bagelHacks2025"
+uri = current_app.config["MONGO_MONGODB_URI"]
 
 # Create a new client and connect to the server
 client = MongoClient(uri, server_api=ServerApi('1'))

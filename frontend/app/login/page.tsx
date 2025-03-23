@@ -29,6 +29,7 @@ export default function LoginPage() {
     e.preventDefault();
     setIsLoading(true);
 
+
     try {
       // Call the Flask backend /login endpoint
       const response = await fetch("http://127.0.0.1:5000/login", {
@@ -52,12 +53,7 @@ export default function LoginPage() {
       setIsLoading(false);
     }
   }
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false);
-      window.location.href = "/candidate/dashboard"; // Redirect to dashboard after login
-    }, 1500);
-  };
+
 
   const fadeIn = {
     hidden: { opacity: 0, y: 20 },

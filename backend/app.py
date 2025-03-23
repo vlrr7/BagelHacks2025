@@ -13,7 +13,7 @@ from database import db
 load_dotenv()
 
 app = Flask(__name__)
-app.config["SECRET_KEY"] = os.getenv("SECRET_KEY", "fallback-secret-key")
+app.config["MONGO_MONGODB_URI"] = os.getenv("MONGODB_URI", "fallback-secret-key")
 
 # Allow CORS requests (from your frontend on port 3000, for instance)
 CORS(app, resources={r"/*": {"origins": "*"}})
