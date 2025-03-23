@@ -35,11 +35,13 @@ export default function CVUploadPage() {
 
   const deleteCV = async (): Promise<void> => {
     try {
-      const response = await fetch("http://127.0.0.1:5000/candidate/cv-delete", {
+      const response = await fetch("http://localhost:5000/candidate/cv-delete", {
         method: "POST",
         headers: {
           'Content-Type': 'application/json',
-        }
+        },
+        credentials: 'include',
+        mode: 'cors',
       });
 
       if (response.ok) {
@@ -53,7 +55,7 @@ export default function CVUploadPage() {
       }
     } catch (e) {
       console.error("Network error:", e);
-      alert("Network error: Unable to connect to the server");
+      alert("Network error: Unable to connect to the server. Make sure the backend is running.");
     }
   };
 
@@ -103,37 +105,30 @@ export default function CVUploadPage() {
     setUploadState("uploading");
 
     try {
-      const response = await fetch("http://127.0.0.1:5000/candidate/cv-upload-api", {
-          method: "POST",
-          body: formData,
+      const response = await fetch("http://localhost:5000/candidate/cv-upload-api", {
+        method: "POST",
+        body: formData,
+        credentials: 'include',
+        mode: 'cors'
       });
-  
+
       if (!response.ok) {
-          const errorText = await response.text();
-          console.error("HTTP error! status:", response.status, "Response text:", errorText);
-          setUploadState("error");
-          return; // Important: Exit the function after handling the error
+        const errorData = await response.text();
+        console.error(`Upload failed: ${response.status}`, errorData);
+        setUploadState("error");
+        return;
       }
-  
-      const contentType = response.headers.get("content-type");
-      if (contentType && contentType.includes("application/json")) {
-          const data = await response.json();
-  
-          if (data.message === "CV uploaded successfully") {
-              setUploadState("success");
-          } else {
-              setUploadState("error");
-          }
+
+      const data = await response.json();
+      if (data.message === "CV uploaded successfully") {
+        setUploadState("success");
       } else {
-          const responseText = await response.text();
-          console.error("Response is not JSON. Response text:", responseText);
-          setUploadState("error");
+        setUploadState("error");
       }
-  
-  } catch (e) {
+    } catch (e) {
       console.error("Upload error:", e);
       setUploadState("error");
-  }
+    }
   };
 
   const handleButtonClick = () => {

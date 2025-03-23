@@ -1,22 +1,43 @@
 from database import init_db
 import os
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, session
 from flask_cors import CORS
 from bson import Binary
 from dotenv import load_dotenv
+from flask_session import Session
 
 import bcrypt
 from werkzeug.utils import secure_filename
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from database import extract_user_cvs
 from cohere_utils import rerank_cohere  # Updated import
+from models import User
 
 # Load environment variables if you want to use them (e.g., SECRET_KEY)
 load_dotenv()
 
 app = Flask(__name__)
-app.config["MONGODB_URI"] = os.getenv("MONGODB_URI", "fallback-secret-key")
-app.config["SECRET_KEY"] = os.getenv("SECRET_KEY", "fallback-secret-key")
+app.config.update(
+    SECRET_KEY=os.environ.get('SECRET_KEY', 'dev'),
+    MONGODB_URI=os.environ.get('MONGODB_URI'),
+    SESSION_TYPE='filesystem',
+    SESSION_COOKIE_HTTPONLY=True,
+    SESSION_COOKIE_SECURE=False,  # Set to True in production with HTTPS
+    SESSION_COOKIE_SAMESITE='Lax',
+)
+
+# Initialize Flask-Session
+Session(app)
+
+# Configure CORS
+CORS(app, resources={
+    r"/*": {
+        "origins": ["http://localhost:3000"],
+        "supports_credentials": True,
+        "allow_headers": ["Content-Type"],
+        "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+    }
+})
 
 # Import the `db` object from database.py
 db = None
@@ -28,28 +49,15 @@ with app.app_context():
 login_manager = LoginManager()
 login_manager.init_app(app)
 
-# User model
-
-
-class User(UserMixin):
-    def __init__(self, user_data):
-        self.id = user_data['email']
-        self.email = user_data['email']
-        self.password = user_data['password']
-
 # User loader callback
 
 
 @login_manager.user_loader
 def load_user(user_id):
     user_data = db.users.find_one({"email": user_id})
-    if user_data:
+    if (user_data):
         return User(user_data)
     return None
-
-
-# Allow CORS requests (from your frontend on port 3000, for instance)
-CORS(app, resources={r"/*": {"origins": "*"}})
 
 ############################################
 #              TEST ROUTE
@@ -69,7 +77,7 @@ def home():
 def register():
     """
     Register a new user.
-    Body: { "email": "<str>", "password": "<str>" }
+    Body: { "email": "<str>", "password": "<str>", "firstName": "<str>", "lastName": "<str>", "accountType": "<str>" }
     """
     data = request.get_json()
     if not data:
@@ -77,9 +85,12 @@ def register():
 
     email = data.get("email")
     password = data.get("password")
+    first_name = data.get("firstName")
+    last_name = data.get("lastName")
+    account_type = data.get("accountType")
 
-    if not email or not password:
-        return jsonify({"error": "Missing email or password"}), 400
+    if not all([email, password, first_name, last_name, account_type]):
+        return jsonify({"error": "Missing required fields"}), 400
 
     # Check if user already exists
     existing_user = db.users.find_one({"email": email})
@@ -89,11 +100,16 @@ def register():
     # Hash the password using bcrypt
     hashed_pw = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt())
 
-    # Insert into the 'users' collection
-    db.users.insert_one({
+    user_data = {
         "email": email,
-        "password": hashed_pw
-    })
+        "password": hashed_pw,
+        "first_name": first_name,
+        "last_name": last_name,
+        "account_type": account_type
+    }
+
+    # Insert into the 'users' collection
+    db.users.insert_one(user_data)
 
     return jsonify({"message": "Registration successful"}), 201
 
@@ -114,46 +130,44 @@ def login():
     if not email or not password:
         return jsonify({"error": "Missing email or password"}), 400
 
-    user = db.users.find_one({"email": email})
-    if not user:
+    user_data = db.users.find_one({"email": email})
+    if not user_data:
         return jsonify({"error": "User not found"}), 404
 
-    # Check the hashed password
-    if bcrypt.checkpw(password.encode("utf-8"), user["password"]):
-        # Password matches
-        return jsonify({"message": "Login successful"}), 200
+    if bcrypt.checkpw(password.encode("utf-8"), user_data["password"]):
+        user = User(user_data)
+        login_user(user)
+        session['user'] = user.to_dict()  # Store user data in session
+        return jsonify({
+            "message": "Login successful",
+            "user": user.to_dict()
+        }), 200
     else:
         return jsonify({"error": "Invalid credentials"}), 401
 
 
 @app.route("/candidate/cv-upload-api", methods=["POST"])
 def add_cv():
-    """
-    Add a CV to the user's profile.
-    Expects a file in the form field named "cv".
-    """
+    # Remove @login_required temporarily for testing
     cv_file = request.files.get("cv")
     if not cv_file:
         return jsonify({"error": "Missing cv"}), 400
 
-    # Read the file content as binary
     file_content = cv_file.read()
     binary_content = Binary(file_content)
 
-    # If you are using Flask-Login, ensure the user is logged in.
-    # For testing, you can temporarily update a test user's document:
-    user_email = current_user.email if current_user.is_authenticated else "test@example.com"
+    # For testing, use a fixed email
+    user_email = "test@example.com"
 
-    # Update the user's document in the database, storing the CV in a field (e.g., "cv_pdf")
     result = db.users.update_one(
         {"email": user_email},
-        {"$set": {"cv_pdf": binary_content}}
+        {"$set": {"cv_pdf": binary_content}},
+        upsert=True
     )
 
-    if result.modified_count > 0:
+    if result.acknowledged:
         return jsonify({"message": "CV uploaded successfully"}), 200
-    else:
-        return jsonify({"error": "Failed to update CV"}), 500
+    return jsonify({"error": "Failed to update CV"}), 500
 
 @app.route("/employer/dashboard", methods=["POST"])
 def set_recruitment_pipeline():
@@ -164,10 +178,13 @@ def set_recruitment_pipeline():
 @app.route('/candidate/cv-delete', methods=['POST'])
 @login_required
 def delete_cv():
-    user_email = current_user.email  
+    user_email = session.get('user', {}).get('email')
+    if not user_email:
+        return jsonify({"error": "User not authenticated"}), 401
+
     result = db.users.update_one(
         {"email": user_email},
-        {"$unset": {"cv_pdf": ""}} 
+        {"$unset": {"cv_pdf": ""}}
     )
 
     if result.modified_count > 0:

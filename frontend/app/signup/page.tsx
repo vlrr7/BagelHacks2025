@@ -46,29 +46,36 @@ export default function SignupPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (password !== confirmPassword) {
-      alert("Passwords don't match");
-      return;
-    }
-
-    if (!agreeToTerms) {
-      alert("You must agree to the terms and conditions");
-      return;
-    }
-
     setIsLoading(true);
 
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false);
-      // Redirect based on account type
-      if (accountType === "candidate") {
-        window.location.href = "/candidate/dashboard";
+    try {
+      const response = await fetch("http://localhost:5000/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email,
+          password,
+          firstName,
+          lastName,
+          accountType
+        }),
+        credentials: 'include'
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        window.location.href = `/${accountType}/dashboard`;
       } else {
-        window.location.href = "/employer/dashboard";
+        alert(data.error || "Registration failed");
       }
-    }, 1500);
+    } catch (error) {
+      console.error("Registration error:", error);
+      alert("An error occurred during registration");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const fadeIn = {

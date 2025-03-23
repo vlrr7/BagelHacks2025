@@ -16,4 +16,5 @@ flask_cors
 flask_login
 PyPDF2
 cohere
+Flask_Session
 
