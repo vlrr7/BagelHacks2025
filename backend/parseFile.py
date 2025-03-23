@@ -17,6 +17,6 @@ def parse_pdf_to_text(file_path):
     return text_complet
 
 if __name__ == "__main__":
-    file_path='/Users/rebecca/Library/CloudStorage/OneDrive-polymtlus/uni/uni/CVs/SE/Summer2025(finish autumn 2026)/RebeccaAbiChahine_CV_VersionFrancais.pdf'
+    file_path='user/pdf/test.pdf'
     text_extrait = parse_pdf_to_text(file_path)
     print(text_extrait)
