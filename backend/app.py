@@ -10,10 +10,11 @@ import bcrypt
 load_dotenv()
 
 app = Flask(__name__)
-app.config["MONGO_MONGODB_URI"] = os.getenv("MONGODB_URI", "fallback-secret-key")
+app.config["MONGODB_URI"] = os.getenv("MONGODB_URI", "fallback-secret-key")
 
 # Import the `db` object from database.py
 from database import init_db
+db = None
 with app.app_context():
     db = init_db()
 

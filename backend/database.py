@@ -2,10 +2,12 @@ import os
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 from dotenv import load_dotenv
+from flask import current_app
 
 
 def init_db():
-    uri = current_app.config["MONGO_MONGODB_URI"]
+    uri = current_app.config["MONGODB_URI"]
+    print("Connecting to MongoDB using URI:", uri)
 
     client = MongoClient(uri, server_api=ServerApi('1'))
 
