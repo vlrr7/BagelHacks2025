@@ -63,7 +63,7 @@ export default function CVUploadPage() {
 
     setUploadState("uploading");
 
-    fetch("/cv-upload", {
+    fetch("http://127.0.0.1:5000/cv-upload", {
       method: "POST",
       body: formData,
     })
@@ -78,6 +78,7 @@ export default function CVUploadPage() {
       .catch(() => {
         setUploadState("error");
       });
+    
   };
 
   const fadeIn = {

@@ -3,12 +3,15 @@ from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 from dotenv import load_dotenv
 
+load_dotenv()
 
 def init_db():
-    uri = current_app.config["MONGO_MONGODB_URI"]
+    # Read the URI directly from environment variables instead of current_app:
+    uri = os.getenv("MONGODB_URI")
+    if not uri:
+        raise Exception("MONGODB_URI is not set in the environment.")
 
     client = MongoClient(uri, server_api=ServerApi('1'))
-
     try:
         client.admin.command("ping")
         print("Pinged your deployment. You successfully connected to MongoDB!")

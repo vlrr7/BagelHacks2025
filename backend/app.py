@@ -1,7 +1,9 @@
 import os
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+from bson import Binary
 from dotenv import load_dotenv
+
 import bcrypt
 from werkzeug.utils import secure_filename
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
@@ -115,27 +117,30 @@ def login():
 def add_cv():
     """
     Add a CV to the user's profile.
-    Body: {"cv": "<file>" }
+    Expects a file in the form field named "cv".
     """
     cv_file = request.files.get("cv")
-
     if not cv_file:
         return jsonify({"error": "Missing cv"}), 400
 
-    # Secure the filename
-    filename = secure_filename(cv_file.filename)
-    filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+    # Read the file content as binary
+    file_content = cv_file.read()
+    binary_content = Binary(file_content)
 
-    # Save the file
-    cv_file.save(filepath)
+    # If you are using Flask-Login, ensure the user is logged in.
+    # For testing, you can temporarily update a test user's document:
+    user_email = current_user.email if current_user.is_authenticated else "test@example.com"
 
-    # Update the user's profile with the CV filepath
-    db.users.update_one(
-        {"email": current_user.email},
-        {"$set": {"cv_path": filepath}}
+    # Update the user's document in the database, storing the CV in a field (e.g., "cv_pdf")
+    result = db.users.update_one(
+        {"email": user_email},
+        {"$set": {"cv_pdf": binary_content}}
     )
 
-    return jsonify({"message": "CV uploaded successfully"}), 200
+    if result.modified_count > 0:
+        return jsonify({"message": "CV uploaded successfully"}), 200
+    else:
+        return jsonify({"error": "Failed to update CV"}), 500
 
 if __name__ == "__main__":
     app.run(debug=True)
