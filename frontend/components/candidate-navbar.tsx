@@ -30,22 +30,24 @@ import { User as AuthUser } from "@/lib/auth";
 export default function CandidateNavbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const router = useRouter();
-  const [user, setUser] = useState<AuthUser | null>(null);
+  const [userInfo, setUserInfo] = useState<{firstName: string, lastName: string} | null>(null);
 
   useEffect(() => {
-    const updateUserFromStorage = () => {
-      const storedUser = localStorage.getItem('user');
-      if (storedUser) {
-        setUser(JSON.parse(storedUser));
+    const fetchUserInfo = async () => {
+      try {
+        const response = await fetch('http://localhost:10000/api/user-info', {
+          credentials: 'include'
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setUserInfo(data);
+        }
+      } catch (error) {
+        console.error('Failed to fetch user info:', error);
       }
     };
 
-    updateUserFromStorage();
-    window.addEventListener('storage', updateUserFromStorage);
-    
-    return () => {
-      window.removeEventListener('storage', updateUserFromStorage);
-    };
+    fetchUserInfo();
   }, []);
 
   const handleLogout = async () => {
@@ -93,13 +95,13 @@ export default function CandidateNavbar() {
                       alt="User"
                     />
                     <AvatarFallback>
-                      {user ? `${user.first_name[0]}${user.last_name[0]}` : 'U'}
+                      {userInfo ? `${userInfo.firstName[0]}${userInfo.lastName[0]}` : 'U'}
                     </AvatarFallback>
                   </Avatar>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuLabel>{user ? `${user.first_name} ${user.last_name}` : 'My Account'}</DropdownMenuLabel>
+                <DropdownMenuLabel>{userInfo ? `${userInfo.firstName} ${userInfo.lastName}` : 'My Account'}</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem className="cursor-pointer">
                   <User className="mr-2 h-4 w-4" />
