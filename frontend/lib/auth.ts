@@ -9,40 +9,40 @@ export interface User {
 export async function checkAuth(): Promise<User | null> {
     try {
         const response = await fetch('http://localhost:5000/check-auth', {
-            method: 'GET',
             credentials: 'include',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-            },
         });
 
+        if (response.status === 401) {
+            // Silently handle expected authentication error
+            return null;
+        }
+
         if (!response.ok) {
-            console.error('Auth check failed:', response.status);
+            console.error('Unexpected auth error:', response.status);
             return null;
         }
 
-        const data = await response.json();
-        if (!data || !data.email) {
-            console.error('Invalid user data:', data);
-            return null;
-        }
-
-        return data;
-    } catch (e) {
-        console.error('Auth check failed:', e);
+        return await response.json();
+    } catch (error) {
+        console.error('Auth check network error:', error);
         return null;
     }
 }
 
-export async function logout(): Promise<void> {
+export async function logout(router: any): Promise<void> {
     try {
-        await fetch('http://localhost:5000/logout', {
+        const response = await fetch('http://localhost:5000/logout', {
             method: 'POST',
             credentials: 'include'
         });
-        localStorage.removeItem('user');
-        window.location.href = '/login';
+        
+        if (response.ok) {
+            localStorage.removeItem('user');
+            // Force a full page refresh to clear all states
+            window.location.href = '/login';
+        } else {
+            console.error('Logout failed:', response.status);
+        }
     } catch (e) {
         console.error('Logout failed:', e);
     }
