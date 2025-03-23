@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
@@ -25,11 +25,30 @@ import {
   PlusCircle,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { logout } from "@/lib/auth";
+import { logout, User } from "@/lib/auth";
 
 export default function EmployerNavbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const router = useRouter();
+  const [userInfo, setUserInfo] = useState<{firstName: string, lastName: string} | null>(null);
+
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/api/user-info', {
+          credentials: 'include'
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setUserInfo(data);
+        }
+      } catch (error) {
+        console.error('Failed to fetch user info:', error);
+      }
+    };
+
+    fetchUserInfo();
+  }, []);
 
   const handleLogout = async () => {
     await logout(router);
@@ -84,12 +103,14 @@ export default function EmployerNavbar() {
                       src="/placeholder.svg?height=32&width=32"
                       alt="Company"
                     />
-                    <AvatarFallback>TC</AvatarFallback>
+                    <AvatarFallback>
+                      {userInfo ? `${userInfo.firstName[0]}${userInfo.lastName[0]}` : 'Co'}
+                    </AvatarFallback>
                   </Avatar>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuLabel>TechCorp Inc.</DropdownMenuLabel>
+                <DropdownMenuLabel>{userInfo ? `${userInfo.firstName} ${userInfo.lastName}` : 'Company'}</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem className="cursor-pointer">
                   <Building className="mr-2 h-4 w-4" />
