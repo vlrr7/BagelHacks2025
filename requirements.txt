@@ -15,4 +15,5 @@ wheel==0.45.1
 flask_cors
 flask_login
 PyPDF2
+cohere
 
