@@ -81,11 +81,12 @@ def login():
         return jsonify({"error": "User not found"}), 404
 
     # Check the hashed password
-    if bcrypt.hashpw(password.encode("utf-8"), user["password"]) == user["password"]:
-        # Password matches
+    if bcrypt.checkpw(password.encode("utf-8"), user["password"]):
+    # Password matches
         return jsonify({"message": "Login successful"}), 200
     else:
         return jsonify({"error": "Invalid credentials"}), 401
+
 
 
 if __name__ == "__main__":
