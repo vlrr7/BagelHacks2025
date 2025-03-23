@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import {
@@ -25,10 +25,37 @@ import CandidateNavbar from "@/components/candidate-navbar";
 
 export default function CandidateDashboard() {
   const [profileCompletion] = useState(75);
+  const [userInfo, setUserInfo] = useState<{ firstName: string; lastName: string } | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/api/user-info", {
+          credentials: "include",
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setUserInfo(data);
+        }
+      } catch (error) {
+        console.error("Failed to fetch user info:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchUserInfo();
+  }, []);
 
   const fadeIn = {
     hidden: { opacity: 0, y: 10 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
+  };
+
+  const welcomeTextFade = {
+    hidden: { opacity: 0 },
+    visible: { opacity: 1, transition: { duration: 0.5, delay: 0.2 } }
   };
 
   return (
@@ -43,7 +70,16 @@ export default function CandidateDashboard() {
           className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8"
         >
           <div>
-            <h1 className="text-3xl font-bold">Welcome back, Alex</h1>
+            {!isLoading && (
+              <motion.h1 
+                className="text-3xl font-bold"
+                initial="hidden"
+                animate="visible"
+                variants={welcomeTextFade}
+              >
+                Welcome back{userInfo ? `, ${userInfo.firstName}` : ''}
+              </motion.h1>
+            )}
             <p className="text-muted-foreground">Your job search dashboard</p>
           </div>
           <div className="mt-4 md:mt-0">
