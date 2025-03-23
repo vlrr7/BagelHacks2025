@@ -160,6 +160,20 @@ def set_recruitment_pipeline():
     documents = extract_user_cvs(db)
     #input query instead of "recruitment pipeline"
     rerank_cohere("Recruitment pipeline", documents)
+
+@app.route('/candidate/cv-delete', methods=['POST'])
+@login_required
+def delete_cv():
+    user_email = current_user.email  
+    result = db.users.update_one(
+        {"email": user_email},
+        {"$unset": {"cv_pdf": ""}} 
+    )
+
+    if result.modified_count > 0:
+        return jsonify({"message": "CV deleted successfully"}), 200
+    else:
+        return jsonify({"error": "Failed to delete CV"}), 500
     
 
 if __name__ == "__main__":
