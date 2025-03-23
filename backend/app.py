@@ -42,10 +42,10 @@ app.config.update(
 # Initialize Session after all configs are set
 Session(app)
 
-# Then initialize CORS
+# Initialize CORS (allow credentials) – include production origin
 CORS(app, resources={
     r"/*": {
-        "origins": ["https://cvue.onrender.com/, https://cvuebackend.onrender.com"],
+        "origins": ["http://localhost:3000", "http://127.0.0.1:3000", "https://cvue.onrender.com"],
         "supports_credentials": True,
         "allow_headers": ["Content-Type"],
         "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
