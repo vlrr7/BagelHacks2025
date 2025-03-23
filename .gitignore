@@ -1,2 +1,4 @@
 ~$BagelHacks.pptx
 .env
+__pycache__
+*.pyc

@@ -1,8 +1,8 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
+import { useState } from "react";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,25 +10,44 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Bell, Menu, X, Building, FileText, MessageSquare, Settings, LogOut, Users, PlusCircle } from "lucide-react"
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  Bell,
+  Menu,
+  X,
+  Building,
+  FileText,
+  MessageSquare,
+  Settings,
+  LogOut,
+  Users,
+  PlusCircle,
+} from "lucide-react";
 
 export default function EmployerNavbar() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
     <header className="border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
           <div className="flex items-center">
-            <Link href="/employer/dashboard" className="flex items-center gap-2">
-              <span className="text-xl font-bold text-primary">TalentConnect</span>
-              <span className="bg-primary/10 text-primary text-xs px-2 py-0.5 rounded">Employer</span>
+            <Link
+              href="/employer/dashboard"
+              className="flex items-center gap-2"
+            >
+              <span className="text-xl font-bold text-primary">CVue</span>
+              <span className="bg-primary/10 text-primary text-xs px-2 py-0.5 rounded">
+                Employer
+              </span>
             </Link>
 
             <nav className="hidden md:flex ml-10 space-x-6">
-              <Link href="/employer/dashboard" className="text-foreground/80 hover:text-foreground transition-colors">
+              <Link
+                href="/employer/dashboard"
+                className="text-foreground/80 hover:text-foreground transition-colors"
+              >
                 Dashboard
               </Link>
               <Link
@@ -37,10 +56,16 @@ export default function EmployerNavbar() {
               >
                 Search Candidates
               </Link>
-              <Link href="/feedback" className="text-foreground/80 hover:text-foreground transition-colors">
+              <Link
+                href="/feedback"
+                className="text-foreground/80 hover:text-foreground transition-colors"
+              >
                 Feedback
               </Link>
-              <Link href="/communication" className="text-foreground/80 hover:text-foreground transition-colors">
+              <Link
+                href="/communication"
+                className="text-foreground/80 hover:text-foreground transition-colors"
+              >
                 Messages
               </Link>
             </nav>
@@ -54,9 +79,15 @@ export default function EmployerNavbar() {
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+                <Button
+                  variant="ghost"
+                  className="relative h-8 w-8 rounded-full"
+                >
                   <Avatar className="h-8 w-8">
-                    <AvatarImage src="/placeholder.svg?height=32&width=32" alt="Company" />
+                    <AvatarImage
+                      src="/placeholder.svg?height=32&width=32"
+                      alt="Company"
+                    />
                     <AvatarFallback>TC</AvatarFallback>
                   </Avatar>
                 </Button>
@@ -92,7 +123,12 @@ export default function EmployerNavbar() {
               </DropdownMenuContent>
             </DropdownMenu>
 
-            <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setIsMenuOpen(true)}>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="md:hidden"
+              onClick={() => setIsMenuOpen(true)}
+            >
               <Menu size={20} />
             </Button>
           </div>
@@ -104,11 +140,20 @@ export default function EmployerNavbar() {
         <div className="fixed inset-0 z-50 bg-background">
           <div className="container mx-auto px-4">
             <div className="flex h-16 items-center justify-between">
-              <Link href="/employer/dashboard" className="flex items-center gap-2">
-                <span className="text-xl font-bold text-primary">TalentConnect</span>
-                <span className="bg-primary/10 text-primary text-xs px-2 py-0.5 rounded">Employer</span>
+              <Link
+                href="/employer/dashboard"
+                className="flex items-center gap-2"
+              >
+                <span className="text-xl font-bold text-primary">CVue</span>
+                <span className="bg-primary/10 text-primary text-xs px-2 py-0.5 rounded">
+                  Employer
+                </span>
               </Link>
-              <Button variant="ghost" size="icon" onClick={() => setIsMenuOpen(false)}>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setIsMenuOpen(false)}
+              >
                 <X size={20} />
               </Button>
             </div>
@@ -161,6 +206,5 @@ export default function EmployerNavbar() {
         </div>
       )}
     </header>
-  )
+  );
 }
-
