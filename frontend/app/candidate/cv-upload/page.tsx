@@ -1,7 +1,7 @@
 "use client";
 
 import type React from "react";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import {
@@ -30,6 +30,7 @@ export default function CVUploadPage() {
     "idle" | "uploading" | "success" | "error"
   >("idle");
   const [dragActive, setDragActive] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault();
@@ -57,33 +58,61 @@ export default function CVUploadPage() {
     }
   };
 
-  const handleFile = (file: File) => {
+  const handleFile = async (file: File) => {
+    // Validate file type
+    const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+    if (!allowedTypes.includes(file.type)) {
+      alert('Please upload a PDF or Word document');
+      return;
+    }
+
+    // Validate file size (5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      alert('File size must be less than 5MB');
+      return;
+    }
+
     const formData = new FormData();
     formData.append("cv", file);
 
     setUploadState("uploading");
 
-    fetch("cv-upload", {
-      method: "POST",
-      body: formData,
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        return response.json();
-      })
-      .then((data) => {
-        if (data.message === "CV uploaded successfully") {
-          setUploadState("success");
-        } else {
-          setUploadState("error");
-        }
-      })
-      .catch((e) => {
-        console.error("Upload error:", e);
-        setUploadState("error");
+    try {
+      const response = await fetch("http://127.0.0.1:5000/candidate/cv-upload-api", {
+          method: "POST",
+          body: formData,
       });
+  
+      if (!response.ok) {
+          const errorText = await response.text();
+          console.error("HTTP error! status:", response.status, "Response text:", errorText);
+          setUploadState("error");
+          return; // Important: Exit the function after handling the error
+      }
+  
+      const contentType = response.headers.get("content-type");
+      if (contentType && contentType.includes("application/json")) {
+          const data = await response.json();
+  
+          if (data.message === "CV uploaded successfully") {
+              setUploadState("success");
+          } else {
+              setUploadState("error");
+          }
+      } else {
+          const responseText = await response.text();
+          console.error("Response is not JSON. Response text:", responseText);
+          setUploadState("error");
+      }
+  
+  } catch (e) {
+      console.error("Upload error:", e);
+      setUploadState("error");
+  }
+  };
+
+  const handleButtonClick = () => {
+    fileInputRef.current?.click();
   };
 
   const fadeIn = {
@@ -149,13 +178,12 @@ export default function CVUploadPage() {
                         <Input
                           type="file"
                           id="cv-upload"
+                          ref={fileInputRef}
                           className="hidden"
                           accept=".pdf,.doc,.docx,.rtf"
                           onChange={handleFileInput}
                         />
-                        <Label htmlFor="cv-upload" asChild>
-                          <Button>Select File</Button>
-                        </Label>
+                        <Button onClick={handleButtonClick}>Select File</Button>
                       </>
                     )}
 

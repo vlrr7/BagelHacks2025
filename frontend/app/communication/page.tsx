@@ -1,16 +1,22 @@
-"use client"
+"use client";
 
-import { Badge } from "@/components/ui/badge"
+import { Badge } from "@/components/ui/badge";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import { motion } from "framer-motion"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { useState } from "react";
+import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   MessageSquare,
   Video,
@@ -22,33 +28,31 @@ import {
   Clock,
   ChevronLeft,
   MoreVertical,
-} from "lucide-react"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import CandidateNavbar from "@/components/candidate-navbar"
+} from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import CandidateNavbar from "@/components/candidate-navbar";
 
 export default function CommunicationPage() {
-  const [activeChat, setActiveChat] = useState<number | null>(0)
-  const [message, setMessage] = useState("")
-
-  const fadeIn = {
-    hidden: { opacity: 0, y: 10 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
-  }
-
-  const chats = [
-    { id: 0, name: "Sarah Miller", company: "TechCorp Inc.", role: "HR Manager", unread: 2 },
-    { id: 1, name: "James Wilson", company: "InnovateSoft", role: "Technical Recruiter", unread: 0 },
-    { id: 2, name: "Emily Chen", company: "DesignStudio", role: "Creative Director", unread: 1 },
-  ]
-
-  const messages = [
+  const [activeChat, setActiveChat] = useState<number | null>(0);
+  const [message, setMessage] = useState("");
+  const [messages, setMessages] = useState([
     {
       id: 1,
       sender: "them",
       text: "Hi Alex, I reviewed your application for the Senior Frontend Developer position at TechCorp. Your experience looks great!",
       time: "10:30 AM",
     },
-    { id: 2, sender: "them", text: "Would you be available for a video interview next week?", time: "10:31 AM" },
+    {
+      id: 2,
+      sender: "them",
+      text: "Would you be available for a video interview next week?",
+      time: "10:31 AM",
+    },
     {
       id: 3,
       sender: "me",
@@ -79,30 +83,90 @@ export default function CommunicationPage() {
       text: "Could you also prepare a brief presentation (5-10 minutes) about a challenging project you've worked on?",
       time: "11:22 AM",
     },
-  ]
+  ]);
+
+  const fadeIn = {
+    hidden: { opacity: 0, y: 10 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
+  };
+
+  const chats = [
+    {
+      id: 0,
+      name: "Sarah Miller",
+      company: "TechCorp Inc.",
+      role: "HR Manager",
+      unread: 2,
+    },
+    {
+      id: 1,
+      name: "James Wilson",
+      company: "InnovateSoft",
+      role: "Technical Recruiter",
+      unread: 0,
+    },
+    {
+      id: 2,
+      name: "Emily Chen",
+      company: "DesignStudio",
+      role: "Creative Director",
+      unread: 1,
+    },
+  ];
+
+  function formatDate(): string {
+    const date: Date = new Date();
+    let hours: number = date.getHours();
+    const minutes: number = date.getMinutes();
+
+    // Determine AM or PM suffix
+    const ampm: string = hours >= 12 ? "PM" : "AM";
+
+    // Convert to 12-hour format
+    hours = hours % 12;
+    hours = hours ? hours : 12; // the hour '0' should be '12'
+
+    // Pad minutes with leading zero if needed
+    const minutesStr: string =
+      minutes < 10 ? "0" + minutes : minutes.toString();
+
+    // Format the final string
+    return `${hours}:${minutesStr} ${ampm}`;
+  }
 
   const handleSendMessage = () => {
     if (message.trim()) {
       // In a real app, you would send the message to the backend
-      setMessage("")
+      // In a fake app, push to the chat anyway
+      let msgsClone = structuredClone(messages);
+      msgsClone.push({
+        id: messages.length + 1,
+        sender: "me",
+        text: message,
+        time: formatDate(),
+      });
+      setMessages(msgsClone);
+      setMessage("");
     }
-  }
+  };
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault()
-      handleSendMessage()
-    }
-  }
+  const pushMessageToChat = (msg_text: string) => {};
 
   return (
     <div className="min-h-screen bg-background">
       <CandidateNavbar />
 
       <main className="container mx-auto px-4 py-8">
-        <motion.div initial="hidden" animate="visible" variants={fadeIn} className="mb-8">
+        <motion.div
+          initial="hidden"
+          animate="visible"
+          variants={fadeIn}
+          className="mb-8"
+        >
           <h1 className="text-3xl font-bold mb-2">Messages</h1>
-          <p className="text-muted-foreground">Communicate with recruiters and employers</p>
+          <p className="text-muted-foreground">
+            Communicate with recruiters and employers
+          </p>
         </motion.div>
 
         <motion.div initial="hidden" animate="visible" variants={fadeIn}>
@@ -114,40 +178,59 @@ export default function CommunicationPage() {
               <TabsTrigger value="calls" className="gap-2">
                 <Phone size={16} /> Calls
               </TabsTrigger>
-              <TabsTrigger value="meetings" className="gap-2">
-                <Calendar size={16} /> Meetings
-              </TabsTrigger>
             </TabsList>
 
             <TabsContent value="messages" className="mt-0">
               <Card className="border-0 shadow-none">
                 <CardContent className="p-0">
                   <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 h-[calc(100vh-250px)] min-h-[500px]">
-                    <div className={`border-r border-border ${activeChat !== null && "hidden md:block"}`}>
+                    <div
+                      className={`border-r border-border ${
+                        activeChat !== null && "hidden md:block"
+                      }`}
+                    >
                       <div className="p-4">
-                        <Input placeholder="Search messages..." className="mb-4" />
+                        <Input
+                          placeholder="Search messages..."
+                          className="mb-4"
+                        />
 
                         <div className="space-y-2">
                           {chats.map((chat) => (
                             <div
                               key={chat.id}
                               className={`p-3 rounded-lg cursor-pointer transition-colors ${
-                                activeChat === chat.id ? "bg-primary/10" : "hover:bg-muted"
+                                activeChat === chat.id
+                                  ? "bg-primary/10"
+                                  : "hover:bg-muted"
                               }`}
                               onClick={() => setActiveChat(chat.id)}
                             >
                               <div className="flex gap-3">
                                 <Avatar>
-                                  <AvatarImage src={`/placeholder.svg?height=40&width=40`} alt={chat.name} />
-                                  <AvatarFallback>{chat.name.charAt(0)}</AvatarFallback>
+                                  <AvatarImage
+                                    src={`/placeholder.svg?height=40&width=40`}
+                                    alt={chat.name}
+                                  />
+                                  <AvatarFallback>
+                                    {chat.name.charAt(0)}
+                                  </AvatarFallback>
                                 </Avatar>
                                 <div className="flex-grow min-w-0">
                                   <div className="flex justify-between items-start">
-                                    <h3 className="font-medium truncate">{chat.name}</h3>
-                                    <span className="text-xs text-muted-foreground">2h ago</span>
+                                    <h3 className="font-medium truncate">
+                                      {chat.name}
+                                    </h3>
+                                    <span className="text-xs text-muted-foreground">
+                                      2h ago
+                                    </span>
                                   </div>
-                                  <p className="text-sm text-muted-foreground truncate">{chat.company}</p>
-                                  <p className="text-xs text-primary truncate">{chat.role}</p>
+                                  <p className="text-sm text-muted-foreground truncate">
+                                    {chat.company}
+                                  </p>
+                                  <p className="text-xs text-primary truncate">
+                                    {chat.role}
+                                  </p>
                                 </div>
                               </div>
                               {chat.unread > 0 && (
@@ -164,7 +247,9 @@ export default function CommunicationPage() {
                     </div>
 
                     <div
-                      className={`md:col-span-2 lg:col-span-3 flex flex-col ${activeChat === null && "hidden md:flex"}`}
+                      className={`md:col-span-2 lg:col-span-3 flex flex-col ${
+                        activeChat === null && "hidden md:flex"
+                      }`}
                     >
                       {activeChat !== null ? (
                         <>
@@ -179,12 +264,21 @@ export default function CommunicationPage() {
                                 <ChevronLeft size={20} />
                               </Button>
                               <Avatar>
-                                <AvatarImage src={`/placeholder.svg?height=40&width=40`} alt={chats[activeChat].name} />
-                                <AvatarFallback>{chats[activeChat].name.charAt(0)}</AvatarFallback>
+                                <AvatarImage
+                                  src={`/placeholder.svg?height=40&width=40`}
+                                  alt={chats[activeChat].name}
+                                />
+                                <AvatarFallback>
+                                  {chats[activeChat].name.charAt(0)}
+                                </AvatarFallback>
                               </Avatar>
                               <div>
-                                <h3 className="font-medium">{chats[activeChat].name}</h3>
-                                <p className="text-sm text-muted-foreground">{chats[activeChat].company}</p>
+                                <h3 className="font-medium">
+                                  {chats[activeChat].name}
+                                </h3>
+                                <p className="text-sm text-muted-foreground">
+                                  {chats[activeChat].company}
+                                </p>
                               </div>
                             </div>
                             <div className="flex items-center gap-2">
@@ -201,10 +295,18 @@ export default function CommunicationPage() {
                                   </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end">
-                                  <DropdownMenuItem>View Profile</DropdownMenuItem>
-                                  <DropdownMenuItem>Mark as Unread</DropdownMenuItem>
-                                  <DropdownMenuItem>Mute Conversation</DropdownMenuItem>
-                                  <DropdownMenuItem className="text-red-500">Block Contact</DropdownMenuItem>
+                                  <DropdownMenuItem>
+                                    View Profile
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem>
+                                    Mark as Unread
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem>
+                                    Mute Conversation
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem className="text-red-500">
+                                    Block Contact
+                                  </DropdownMenuItem>
                                 </DropdownMenuContent>
                               </DropdownMenu>
                             </div>
@@ -214,17 +316,25 @@ export default function CommunicationPage() {
                             {messages.map((msg) => (
                               <div
                                 key={msg.id}
-                                className={`flex ${msg.sender === "me" ? "justify-end" : "justify-start"}`}
+                                className={`flex ${
+                                  msg.sender === "me"
+                                    ? "justify-end"
+                                    : "justify-start"
+                                }`}
                               >
                                 <div
                                   className={`max-w-[80%] md:max-w-[70%] rounded-lg p-3 ${
-                                    msg.sender === "me" ? "bg-primary text-primary-foreground" : "bg-muted"
+                                    msg.sender === "me"
+                                      ? "bg-primary text-primary-foreground"
+                                      : "bg-muted"
                                   }`}
                                 >
                                   <p>{msg.text}</p>
                                   <p
                                     className={`text-xs mt-1 ${
-                                      msg.sender === "me" ? "text-primary-foreground/70" : "text-muted-foreground"
+                                      msg.sender === "me"
+                                        ? "text-primary-foreground/70"
+                                        : "text-muted-foreground"
                                     }`}
                                   >
                                     {msg.time}
@@ -243,13 +353,16 @@ export default function CommunicationPage() {
                                 placeholder="Type a message..."
                                 value={message}
                                 onChange={(e) => setMessage(e.target.value)}
-                                onKeyDown={handleKeyDown}
                                 className="flex-grow"
                               />
                               <Button variant="ghost" size="icon">
                                 <Mic size={20} />
                               </Button>
-                              <Button size="icon" onClick={handleSendMessage} disabled={!message.trim()}>
+                              <Button
+                                size="icon"
+                                onClick={handleSendMessage}
+                                disabled={!message.trim()}
+                              >
                                 <Send size={20} />
                               </Button>
                             </div>
@@ -259,9 +372,12 @@ export default function CommunicationPage() {
                         <div className="flex-grow flex items-center justify-center">
                           <div className="text-center">
                             <MessageSquare className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                            <h3 className="text-lg font-medium mb-2">Select a conversation</h3>
+                            <h3 className="text-lg font-medium mb-2">
+                              Select a conversation
+                            </h3>
                             <p className="text-muted-foreground">
-                              Choose a conversation from the list to start messaging
+                              Choose a conversation from the list to start
+                              messaging
                             </p>
                           </div>
                         </div>
@@ -276,7 +392,9 @@ export default function CommunicationPage() {
               <Card>
                 <CardHeader>
                   <CardTitle>Recent Calls</CardTitle>
-                  <CardDescription>View your recent and upcoming calls with recruiters</CardDescription>
+                  <CardDescription>
+                    View your recent and upcoming calls with recruiters
+                  </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
@@ -284,16 +402,24 @@ export default function CommunicationPage() {
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
                           <Avatar>
-                            <AvatarImage src={`/placeholder.svg?height=40&width=40`} alt="James Wilson" />
+                            <AvatarImage
+                              src={`/placeholder.svg?height=40&width=40`}
+                              alt="James Wilson"
+                            />
                             <AvatarFallback>JW</AvatarFallback>
                           </Avatar>
                           <div>
                             <h3 className="font-medium">James Wilson</h3>
-                            <p className="text-sm text-muted-foreground">InnovateSoft</p>
+                            <p className="text-sm text-muted-foreground">
+                              InnovateSoft
+                            </p>
                           </div>
                         </div>
                         <div className="flex items-center gap-2">
-                          <Badge variant="outline" className="flex items-center gap-1">
+                          <Badge
+                            variant="outline"
+                            className="flex items-center gap-1"
+                          >
                             <Clock size={12} />
                             <span>Yesterday, 3:30 PM</span>
                           </Badge>
@@ -308,12 +434,17 @@ export default function CommunicationPage() {
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
                           <Avatar>
-                            <AvatarImage src={`/placeholder.svg?height=40&width=40`} alt="Emily Chen" />
+                            <AvatarImage
+                              src={`/placeholder.svg?height=40&width=40`}
+                              alt="Emily Chen"
+                            />
                             <AvatarFallback>EC</AvatarFallback>
                           </Avatar>
                           <div>
                             <h3 className="font-medium">Emily Chen</h3>
-                            <p className="text-sm text-muted-foreground">DesignStudio</p>
+                            <p className="text-sm text-muted-foreground">
+                              DesignStudio
+                            </p>
                           </div>
                         </div>
                         <div className="flex items-center gap-2">
@@ -334,85 +465,9 @@ export default function CommunicationPage() {
                 </CardContent>
               </Card>
             </TabsContent>
-
-            <TabsContent value="meetings" className="mt-0">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Scheduled Meetings</CardTitle>
-                  <CardDescription>Manage your upcoming interviews and meetings</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div className="border border-border rounded-lg p-4">
-                      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                        <div>
-                          <h3 className="font-medium text-lg">Technical Interview - TechCorp Inc.</h3>
-                          <div className="flex items-center gap-2 text-muted-foreground mt-1">
-                            <Calendar size={14} />
-                            <span>Tuesday, May 24, 2023</span>
-                            <Clock size={14} className="ml-2" />
-                            <span>2:00 PM - 3:00 PM (PST)</span>
-                          </div>
-                          <div className="flex items-center gap-2 mt-2">
-                            <Avatar className="h-6 w-6">
-                              <AvatarImage src={`/placeholder.svg?height=24&width=24`} alt="Sarah Miller" />
-                              <AvatarFallback>SM</AvatarFallback>
-                            </Avatar>
-                            <span className="text-sm">Sarah Miller (HR Manager)</span>
-                            <Avatar className="h-6 w-6">
-                              <AvatarImage src={`/placeholder.svg?height=24&width=24`} alt="John Doe" />
-                              <AvatarFallback>JD</AvatarFallback>
-                            </Avatar>
-                            <span className="text-sm">John Doe (Lead Developer)</span>
-                          </div>
-                        </div>
-                        <div className="flex flex-wrap gap-2">
-                          <Button variant="outline" size="sm">
-                            <Calendar size={14} className="mr-1" /> Add to Calendar
-                          </Button>
-                          <Button size="sm">
-                            <Video size={14} className="mr-1" /> Join Meeting
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="border border-border rounded-lg p-4">
-                      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                        <div>
-                          <h3 className="font-medium text-lg">Portfolio Review - DesignStudio</h3>
-                          <div className="flex items-center gap-2 text-muted-foreground mt-1">
-                            <Calendar size={14} />
-                            <span>Friday, May 27, 2023</span>
-                            <Clock size={14} className="ml-2" />
-                            <span>11:00 AM - 12:00 PM (PST)</span>
-                          </div>
-                          <div className="flex items-center gap-2 mt-2">
-                            <Avatar className="h-6 w-6">
-                              <AvatarImage src={`/placeholder.svg?height=24&width=24`} alt="Emily Chen" />
-                              <AvatarFallback>EC</AvatarFallback>
-                            </Avatar>
-                            <span className="text-sm">Emily Chen (Creative Director)</span>
-                          </div>
-                        </div>
-                        <div className="flex flex-wrap gap-2">
-                          <Button variant="outline" size="sm">
-                            <Calendar size={14} className="mr-1" /> Add to Calendar
-                          </Button>
-                          <Button variant="outline" size="sm">
-                            <Clock size={14} className="mr-1" /> Reschedule
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
           </Tabs>
         </motion.div>
       </main>
     </div>
-  )
+  );
 }
-

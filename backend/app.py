@@ -2,7 +2,9 @@ from database import init_db
 import os
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+from bson import Binary
 from dotenv import load_dotenv
+
 import bcrypt
 from werkzeug.utils import secure_filename
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
@@ -14,6 +16,7 @@ load_dotenv()
 
 app = Flask(__name__)
 app.config["MONGODB_URI"] = os.getenv("MONGODB_URI", "fallback-secret-key")
+app.config["SECRET_KEY"] = os.getenv("SECRET_KEY", "fallback-secret-key")
 
 # Import the `db` object from database.py
 db = None
@@ -123,31 +126,34 @@ def login():
         return jsonify({"error": "Invalid credentials"}), 401
 
 
-@app.route("/cv-upload", methods=["POST"])
+@app.route("/candidate/cv-upload-api", methods=["POST"])
 def add_cv():
     """
     Add a CV to the user's profile.
-    Body: {"cv": "<file>" }
+    Expects a file in the form field named "cv".
     """
     cv_file = request.files.get("cv")
-
     if not cv_file:
         return jsonify({"error": "Missing cv"}), 400
 
-    # Secure the filename
-    filename = secure_filename(cv_file.filename)
-    filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+    # Read the file content as binary
+    file_content = cv_file.read()
+    binary_content = Binary(file_content)
 
-    # Save the file
-    cv_file.save(filepath)
+    # If you are using Flask-Login, ensure the user is logged in.
+    # For testing, you can temporarily update a test user's document:
+    user_email = current_user.email if current_user.is_authenticated else "test@example.com"
 
-    # Update the user's profile with the CV filepath
-    db.users.update_one(
-        {"email": current_user.email},
-        {"$set": {"cv_path": filepath}}
+    # Update the user's document in the database, storing the CV in a field (e.g., "cv_pdf")
+    result = db.users.update_one(
+        {"email": user_email},
+        {"$set": {"cv_pdf": binary_content}}
     )
 
-    return jsonify({"message": "CV uploaded successfully"}), 200
+    if result.modified_count > 0:
+        return jsonify({"message": "CV uploaded successfully"}), 200
+    else:
+        return jsonify({"error": "Failed to update CV"}), 500
 
 @app.route("/employer/dashboard", methods=["POST"])
 def set_recruitment_pipeline():

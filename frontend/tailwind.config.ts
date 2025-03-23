@@ -10,16 +10,8 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      keyframes: {},
       colors: {
-        animation: {
-          "move-left-right": "moveFromLeftToRight 2s ease-out forwards",
-        },
-        keyframes: {
-          moveFromLeftToRight: {
-            "0%": { transform: "translateX(-100%)", opacity: "0" },
-            "100%": { transform: "translateX(0)", opacity: "1" },
-          },
-        },
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         card: {
@@ -93,10 +85,15 @@ const config: Config = {
             height: "0",
           },
         },
+        moveFromLeftToRight: {
+          "0%": { transform: "translateX(-100%)", opacity: "0" },
+          "100%": { transform: "translateX(0)", opacity: "1" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        "move-left-right": "moveFromLeftToRight 2s ease-out forwards",
       },
     },
   },
