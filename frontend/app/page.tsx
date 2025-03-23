@@ -184,13 +184,14 @@ export default function HomePage() {
               </div>
               <div className="rounded-lg p-6 h-64 flex items-center justify-center">
                 <iframe
-                  width="100%"
-                  height="100%"
-                  src="https://www.youtube-nocookie.com/embed/izrNcMY8iaE?si=0-bPHliVSp7zkLcu&amp;controls=0"
+                  width="560"
+                  height="315"
+                  src="https://www.youtube.com/embed/12p9V0hn6Ng?si=F7mRYpXcDFwj34qF"
                   title="YouTube video player"
+                  frameborder="0"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                  referrerPolicy="strict-origin-when-cross-origin"
-                  allowFullScreen
+                  referrerpolicy="strict-origin-when-cross-origin"
+                  allowfullscreen
                 ></iframe>
               </div>
             </div>
