@@ -1,10 +1,11 @@
 "use client";
 
 import type React from "react";
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";  // Changed from next/router
 import { motion } from "framer-motion";
+import { checkAuth } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -24,6 +25,7 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -62,6 +64,17 @@ export default function LoginPage() {
       setIsLoading(false);
     }
   }
+
+  useEffect(() => {
+    // Remove any error messages about authentication
+    const checkCurrentAuth = async () => {
+      const user = await checkAuth();
+      if (user) {
+        router.push(user.account_type === 'employer' ? '/employer/dashboard' : '/candidate/dashboard');
+      }
+    };
+    checkCurrentAuth();
+  }, [router]);
 
   const fadeIn = {
     hidden: { opacity: 0, y: 20 },
