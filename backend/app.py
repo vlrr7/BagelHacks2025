@@ -9,7 +9,7 @@ import bcrypt
 from werkzeug.utils import secure_filename
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from database import extract_user_cvs
-from cohere import rerank_cohere
+from cohere_utils import rerank_cohere  # Updated import
 
 # Load environment variables if you want to use them (e.g., SECRET_KEY)
 load_dotenv()
