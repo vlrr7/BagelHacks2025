@@ -34,17 +34,17 @@ export default function CandidateNavbar() {
 
   useEffect(() => {
     const updateUserFromStorage = () => {
-      const storedUser = localStorage.getItem('user');
+      const storedUser = localStorage.getItem("user");
       if (storedUser) {
         setUser(JSON.parse(storedUser));
       }
     };
 
     updateUserFromStorage();
-    window.addEventListener('storage', updateUserFromStorage);
-    
+    window.addEventListener("storage", updateUserFromStorage);
+
     return () => {
-      window.removeEventListener('storage', updateUserFromStorage);
+      window.removeEventListener("storage", updateUserFromStorage);
     };
   }, []);
 
@@ -93,30 +93,15 @@ export default function CandidateNavbar() {
                       alt="User"
                     />
                     <AvatarFallback>
-                      {user ? `${user.first_name[0]}${user.last_name[0]}` : 'U'}
+                      {user ? `${user.first_name[0]}${user.last_name[0]}` : "U"}
                     </AvatarFallback>
                   </Avatar>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuLabel>{user ? `${user.first_name} ${user.last_name}` : 'My Account'}</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem className="cursor-pointer">
-                  <User className="mr-2 h-4 w-4" />
-                  <span>Profile</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem className="cursor-pointer">
-                  <FileText className="mr-2 h-4 w-4" />
-                  <span>My Applications</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem className="cursor-pointer">
-                  <MessageSquare className="mr-2 h-4 w-4" />
-                  <span>Messages</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem className="cursor-pointer">
-                  <Settings className="mr-2 h-4 w-4" />
-                  <span>Settings</span>
-                </DropdownMenuItem>
+                <DropdownMenuLabel>
+                  {user ? `${user.first_name} ${user.last_name}` : "My Account"}
+                </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
                   className="cursor-pointer"

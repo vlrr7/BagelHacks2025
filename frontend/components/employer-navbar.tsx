@@ -30,20 +30,23 @@ import { logout, User } from "@/lib/auth";
 export default function EmployerNavbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const router = useRouter();
-  const [userInfo, setUserInfo] = useState<{firstName: string, lastName: string} | null>(null);
+  const [userInfo, setUserInfo] = useState<{
+    firstName: string;
+    lastName: string;
+  } | null>(null);
 
   useEffect(() => {
     const fetchUserInfo = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/user-info', {
-          credentials: 'include'
+        const response = await fetch("http://localhost:5000/api/user-info", {
+          credentials: "include",
         });
         if (response.ok) {
           const data = await response.json();
           setUserInfo(data);
         }
       } catch (error) {
-        console.error('Failed to fetch user info:', error);
+        console.error("Failed to fetch user info:", error);
       }
     };
 
@@ -104,34 +107,19 @@ export default function EmployerNavbar() {
                       alt="Company"
                     />
                     <AvatarFallback>
-                      {userInfo ? `${userInfo.firstName[0]}${userInfo.lastName[0]}` : 'Co'}
+                      {userInfo
+                        ? `${userInfo.firstName[0]}${userInfo.lastName[0]}`
+                        : "Co"}
                     </AvatarFallback>
                   </Avatar>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuLabel>{userInfo ? `${userInfo.firstName} ${userInfo.lastName}` : 'Company'}</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem className="cursor-pointer">
-                  <Building className="mr-2 h-4 w-4" />
-                  <span>Company Profile</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem className="cursor-pointer">
-                  <FileText className="mr-2 h-4 w-4" />
-                  <span>Job Postings</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem className="cursor-pointer">
-                  <Users className="mr-2 h-4 w-4" />
-                  <span>Candidates</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem className="cursor-pointer">
-                  <MessageSquare className="mr-2 h-4 w-4" />
-                  <span>Messages</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem className="cursor-pointer">
-                  <Settings className="mr-2 h-4 w-4" />
-                  <span>Settings</span>
-                </DropdownMenuItem>
+                <DropdownMenuLabel>
+                  {userInfo
+                    ? `${userInfo.firstName} ${userInfo.lastName}`
+                    : "Company"}
+                </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
                   className="cursor-pointer"
