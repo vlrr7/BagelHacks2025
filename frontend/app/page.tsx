@@ -74,7 +74,7 @@ export default function HomePage() {
         >
           <h1 className="text-4xl md:text-6xl font-bold mb-6">
             Get{" "}
-            <span className="underline animate-move-left-right">Valuable</span>{" "}
+            <span className="underline animate-move-left-right">Valuable</span>
             Feedback From HR Teams{" "}
             <span className="underline animate-move-left-right">
               Everywhere
