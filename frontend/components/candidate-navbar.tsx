@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
@@ -25,10 +25,28 @@ import {
 } from "lucide-react";
 import { logout } from "@/lib/auth";
 import { useRouter } from "next/navigation";
+import { User as AuthUser } from "@/lib/auth";
 
 export default function CandidateNavbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const router = useRouter();
+  const [user, setUser] = useState<AuthUser | null>(null);
+
+  useEffect(() => {
+    const updateUserFromStorage = () => {
+      const storedUser = localStorage.getItem('user');
+      if (storedUser) {
+        setUser(JSON.parse(storedUser));
+      }
+    };
+
+    updateUserFromStorage();
+    window.addEventListener('storage', updateUserFromStorage);
+    
+    return () => {
+      window.removeEventListener('storage', updateUserFromStorage);
+    };
+  }, []);
 
   const handleLogout = async () => {
     await logout(router);
@@ -91,12 +109,14 @@ export default function CandidateNavbar() {
                       src="/placeholder.svg?height=32&width=32"
                       alt="User"
                     />
-                    <AvatarFallback>AC</AvatarFallback>
+                    <AvatarFallback>
+                      {user ? `${user.first_name[0]}${user.last_name[0]}` : 'U'}
+                    </AvatarFallback>
                   </Avatar>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                <DropdownMenuLabel>{user ? `${user.first_name} ${user.last_name}` : 'My Account'}</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem className="cursor-pointer">
                   <User className="mr-2 h-4 w-4" />

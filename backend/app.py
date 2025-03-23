@@ -364,6 +364,17 @@ def get_raw_cv():
         print(f"Error getting CV: {str(e)}")
         return jsonify({"error": "Failed to get CV"}), 500
 
+@app.route("/api/user-info", methods=["GET"])
+def get_user_info():
+    user_data = session.get('user')
+    if not user_data:
+        return jsonify({"error": "Not authenticated"}), 401
+    
+    return jsonify({
+        "firstName": user_data.get('first_name'),
+        "lastName": user_data.get('last_name'),
+        "accountType": user_data.get('account_type')
+    }), 200
 
 if __name__ == "__main__":
     # Use the PORT environment variable (default to 10000 if not set)

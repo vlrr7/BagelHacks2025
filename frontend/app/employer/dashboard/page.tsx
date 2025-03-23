@@ -5,12 +5,38 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Users, Search, MessageSquare, FileText, PlusCircle } from "lucide-react"
 import EmployerNavbar from "@/components/employer-navbar"
+import { useState, useEffect } from "react"
 
 export default function EmployerDashboard() {
+  const [userInfo, setUserInfo] = useState<{ firstName: string; lastName: string } | null>(null)
+
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/api/user-info", {
+          credentials: "include",
+        })
+        if (response.ok) {
+          const data = await response.json()
+          setUserInfo(data)
+        }
+      } catch (error) {
+        console.error("Failed to fetch user info:", error)
+      }
+    }
+
+    fetchUserInfo()
+  }, [])
+
   const fadeIn = {
     hidden: { opacity: 0, y: 10 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
   }
+
+  const welcomeTextFade = {
+    hidden: { opacity: 0 },
+    visible: { opacity: 1, transition: { duration: 0.5, delay: 0.2 } }
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -24,7 +50,14 @@ export default function EmployerDashboard() {
           className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8"
         >
           <div>
-            <h1 className="text-3xl font-bold">Employer Dashboard</h1>
+            <motion.h1 
+              className="text-3xl font-bold mb-4"
+              initial="hidden"
+              animate="visible"
+              variants={welcomeTextFade}
+            >
+              Welcome back{userInfo ? `, ${userInfo.firstName}` : ''}
+            </motion.h1>
             <p className="text-muted-foreground">Manage your recruitment process</p>
           </div>
           <div className="mt-4 md:mt-0 flex gap-3">
