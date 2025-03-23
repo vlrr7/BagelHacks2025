@@ -149,10 +149,6 @@ export default function PricingPage() {
                       <ul className="space-y-3">
                         <li className="flex items-start gap-2">
                           <Check className="h-5 w-5 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" />
-                          <span>Up to 3 active job postings</span>
-                        </li>
-                        <li className="flex items-start gap-2">
-                          <Check className="h-5 w-5 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" />
                           <span>Basic candidate search</span>
                         </li>
                         <li className="flex items-start gap-2">
@@ -212,10 +208,6 @@ export default function PricingPage() {
                     </CardHeader>
                     <CardContent className="flex-grow">
                       <ul className="space-y-3">
-                        <li className="flex items-start gap-2">
-                          <Check className="h-5 w-5 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" />
-                          <span>Up to 10 active job postings</span>
-                        </li>
                         <li className="flex items-start gap-2">
                           <Check className="h-5 w-5 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" />
                           <span>Advanced candidate search with filters</span>
@@ -293,10 +285,6 @@ export default function PricingPage() {
                     </CardHeader>
                     <CardContent className="flex-grow">
                       <ul className="space-y-3">
-                        <li className="flex items-start gap-2">
-                          <Check className="h-5 w-5 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" />
-                          <span>Unlimited job postings</span>
-                        </li>
                         <li className="flex items-start gap-2">
                           <Check className="h-5 w-5 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" />
                           <span>Premium candidate search with all filters</span>
@@ -467,72 +455,6 @@ export default function PricingPage() {
           </div>
         </motion.section>
       </main>
-
-      <footer className="bg-muted py-12">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            <div>
-              <h3 className="font-semibold mb-4">CVue</h3>
-              <ul className="space-y-2 text-sm text-foreground/70">
-                <li>
-                  <Link href="/about">About Us</Link>
-                </li>
-                <li>
-                  <Link href="/contact">Contact</Link>
-                </li>
-                <li>
-                  <Link href="/careers">Careers</Link>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="font-semibold mb-4">For Candidates</h3>
-              <ul className="space-y-2 text-sm text-foreground/70">
-                <li>
-                  <Link href="/upload-cv">Upload CV</Link>
-                </li>
-                <li>
-                  <Link href="/job-search">Find Jobs</Link>
-                </li>
-                <li>
-                  <Link href="/career-resources">Career Resources</Link>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="font-semibold mb-4">For Employers</h3>
-              <ul className="space-y-2 text-sm text-foreground/70">
-                <li>
-                  <Link href="/post-job">Post a Job</Link>
-                </li>
-                <li>
-                  <Link href="/pricing">Pricing</Link>
-                </li>
-                <li>
-                  <Link href="/enterprise">Enterprise Solutions</Link>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="font-semibold mb-4">Legal</h3>
-              <ul className="space-y-2 text-sm text-foreground/70">
-                <li>
-                  <Link href="/privacy">Privacy Policy</Link>
-                </li>
-                <li>
-                  <Link href="/terms">Terms of Service</Link>
-                </li>
-                <li>
-                  <Link href="/cookies">Cookie Policy</Link>
-                </li>
-              </ul>
-            </div>
-          </div>
-          <div className="mt-12 pt-6 border-t border-border text-center text-sm text-foreground/60">
-            <p>© {new Date().getFullYear()} CVue. All rights reserved.</p>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 }
