@@ -17,4 +17,4 @@ flask_login
 PyPDF2
 cohere
 Flask_Session
-
+waitress
