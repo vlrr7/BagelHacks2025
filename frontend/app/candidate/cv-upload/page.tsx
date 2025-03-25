@@ -224,7 +224,7 @@ export default function CVUploadPage() {
                           id="cv-upload"
                           ref={fileInputRef}
                           className="hidden"
-                          accept=".pdf,.doc,.docx,.rtf"
+                          accept=".pdf"
                           onChange={handleFileInput}
                         />
                         <Button onClick={handleButtonClick}>Select File</Button>
@@ -431,7 +431,7 @@ export default function CVUploadPage() {
       >
         <div className="w-full h-[80vh]">
           <iframe 
-            src="/candidate/raw-cv"
+            src="/api/candidate/raw-cv"
             className="w-full h-full border-0"
             title="CV Preview"
           />

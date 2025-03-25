@@ -1,6 +1,6 @@
 from database import init_db, debug_print_user, extract_user_cvs
 import os
-from flask import Flask, request, jsonify, session, send_file
+from flask import Flask, request, jsonify, session, send_file, send_from_directory, abort
 from flask_cors import CORS
 from bson import Binary
 from dotenv import load_dotenv
@@ -17,7 +17,7 @@ import io
 # Load environment variables if you want to use them (e.g., SECRET_KEY)
 load_dotenv()
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='../frontend/out')
 
 # First set the MongoDB URI
 app.config["MONGODB_URI"] = os.environ.get('MONGODB_URI')  # Remove the trailing comma!
@@ -35,7 +35,7 @@ app.config.update(
     SESSION_MONGODB_COLLECT='sessions',
     SESSION_COOKIE_HTTPONLY=True,
     SESSION_COOKIE_SECURE=True,  # Changed to True for HTTPS
-    SESSION_COOKIE_SAMESITE='None',  # Changed to None to allow cross-site cookies
+    # SESSION_COOKIE_SAMESITE='None',  # Changed to None to allow cross-site cookies
     PERMANENT_SESSION_LIFETIME=timedelta(days=7),
 )
 
@@ -73,16 +73,31 @@ def load_user(user_id):
 ############################################
 
 
-@app.route("/", methods=["GET"])
-def home():
-    return jsonify({"message": "Backend is running!"})
+
+@app.route('/')
+def serve_index():
+    return send_from_directory(app.static_folder, 'index.html')
+
+@app.route('/<path:path>')
+def serve_other(path):
+    if os.path.exists(os.path.join(app.static_folder, path)):
+        return send_from_directory(app.static_folder, path)
+    elif os.path.exists(os.path.join(app.static_folder, path + '.html')):
+        return send_from_directory(app.static_folder, path + '.html')
+    else:
+        abort(404)
+
+@app.errorhandler(404)
+def page_not_found(e):
+    return send_from_directory(app.static_folder, '404.html'), 404
+
+
 
 ############################################
 #              AUTH ROUTES
 ############################################
 
-
-@app.route("/register", methods=["POST"])
+@app.route("/api/register", methods=["POST"])
 def register():
     """
     Register a new user.
@@ -123,7 +138,7 @@ def register():
     return jsonify({"message": "Registration successful"}), 201
 
 
-@app.route("/login", methods=["POST"])
+@app.route("/api/login", methods=["POST"])
 def login():
     """
     Login an existing user.
@@ -171,12 +186,12 @@ def check_auth():
     
     return jsonify({"error": "Not authenticated"}), 401
 
-@app.route("/logout", methods=["POST"])
+@app.route("/api/logout", methods=["POST"])
 def logout():
     session.pop('user', None)
     return jsonify({"message": "Logged out successfully"}), 200
 
-@app.route("/candidate/cv-upload-api", methods=["POST"])
+@app.route("/api/candidate/cv-upload", methods=["POST"])
 def add_cv():
     try:
         user_data = session.get('user')
@@ -236,13 +251,13 @@ def add_cv():
         print(f"Error type: {type(e)}")
         return jsonify({"error": f"Server error: {str(e)}"}), 500
 
-@app.route("/employer/dashboard", methods=["POST"])
+@app.route("/api/employer/dashboard", methods=["POST"])
 def set_recruitment_pipeline():
     documents = extract_user_cvs(db)
     #input query instead of "recruitment pipeline"
     rerank_cohere("Recruitment pipeline", documents)
 
-@app.route('/candidate/cv-delete', methods=['POST'])
+@app.route('/api/candidate/cv-delete', methods=['POST'])
 def delete_cv():
     user_data = session.get('user')
     if not user_data:
@@ -281,7 +296,7 @@ def delete_cv():
         print(f"Database error: {e}")
         return jsonify({"error": f"Database error: {str(e)}"}), 500
 
-@app.route("/search-candidates", methods=["POST"])
+@app.route("/api/search-candidates", methods=["POST"])
 def search_candidates():
     try:
         data = request.get_json()
@@ -315,7 +330,7 @@ def search_candidates():
         print(f"Search error: {str(e)}")
         return jsonify({"error": f"Search failed: {str(e)}"}), 500
 
-@app.route("/candidate/view-cv", methods=["GET"])
+@app.route("/api/candidate/view-cv", methods=["GET"])
 def view_cv():
     try:
         user_data = session.get('user')
@@ -339,7 +354,7 @@ def view_cv():
         print(f"Error viewing CV: {str(e)}")
         return jsonify({"error": "Failed to view CV"}), 500
 
-@app.route("/candidate/raw-cv", methods=["GET"])
+@app.route("/api/candidate/raw-cv", methods=["GET"])
 def get_raw_cv():
     try:
         email = request.args.get('email')
