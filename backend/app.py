@@ -34,9 +34,9 @@ app.config.update(
     SESSION_MONGODB_DB='bd',
     SESSION_MONGODB_COLLECT='sessions',
     SESSION_COOKIE_HTTPONLY=True,
-    SESSION_COOKIE_SECURE=False,  # Set to True in production with HTTPS
-    SESSION_COOKIE_SAMESITE='Lax',
-    PERMANENT_SESSION_LIFETIME=timedelta(days=7),  # Add this line
+    SESSION_COOKIE_SECURE=True,  # Changed to True for HTTPS
+    SESSION_COOKIE_SAMESITE='None',  # Changed to None to allow cross-site cookies
+    PERMANENT_SESSION_LIFETIME=timedelta(days=7),
 )
 
 # Initialize Session after all configs are set
@@ -45,10 +45,11 @@ Session(app)
 # Then initialize CORS
 CORS(app, resources={
     r"/*": {
-        "origins": ["https://cvue.onrender.com/, https://cvuebackend.onrender.com"],
+        "origins": ["https://cvue.onrender.com", "https://cvuebackend.onrender.com", "http://localhost:3000"],
         "supports_credentials": True,
         "allow_headers": ["Content-Type"],
-        "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+        "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        "expose_headers": ["Set-Cookie"]  # Added to ensure cookies are exposed
     }
 })
 
