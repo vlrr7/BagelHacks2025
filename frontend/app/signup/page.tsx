@@ -49,7 +49,7 @@ export default function SignupPage() {
     setIsLoading(true);
 
     try {
-      const response = await fetch("https://cvuebackend.onrender.com/register", {
+      const response = await fetch("/api/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

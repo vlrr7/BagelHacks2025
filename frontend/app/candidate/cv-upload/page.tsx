@@ -54,7 +54,7 @@ export default function CVUploadPage() {
 
   const deleteCV = async (): Promise<void> => {
     try {
-      const response = await fetch("https://cvuebackend.onrender.com/candidate/cv-delete", {
+      const response = await fetch("/api/candidate/cv-delete", {
         method: "POST",
         headers: {
           'Content-Type': 'application/json',
@@ -124,7 +124,7 @@ export default function CVUploadPage() {
     setUploadState("uploading");
 
     try {
-      const response = await fetch("https://cvuebackend.onrender.com/candidate/cv-upload-api", {
+      const response = await fetch("/api/candidate/cv-upload", {
         method: "POST",
         body: formData,
         credentials: 'include',
@@ -431,7 +431,7 @@ export default function CVUploadPage() {
       >
         <div className="w-full h-[80vh]">
           <iframe 
-            src="https://cvuebackend.onrender.com/candidate/raw-cv"
+            src="/candidate/raw-cv"
             className="w-full h-full border-0"
             title="CV Preview"
           />

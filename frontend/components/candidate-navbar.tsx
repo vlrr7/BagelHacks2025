@@ -35,7 +35,7 @@ export default function CandidateNavbar() {
   useEffect(() => {
     const fetchUserInfo = async () => {
       try {
-        const response = await fetch('https://cvuebackend.onrender.com/api/user-info', {
+        const response = await fetch('/api/user-info', {
           credentials: 'include'
         });
         if (response.ok) {
